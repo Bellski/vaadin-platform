@@ -1,4 +1,4 @@
-package ru.vaadinp.test.handlers;
+package ru.vaadinp.test.uri;
 
 import org.junit.Assert;
 import org.junit.Test;

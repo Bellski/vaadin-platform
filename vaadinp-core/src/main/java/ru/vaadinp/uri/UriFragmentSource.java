@@ -1,7 +1,6 @@
 package ru.vaadinp.uri;
 
 import ru.vaadinp.Cleanable;
-import ru.vaadinp.place.BasePlaceManager;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
 
 /**
