@@ -1,8 +1,6 @@
 package ru.vaadinp.uri;
 
 import com.vaadin.server.Page;
-import ru.vaadinp.Cleanable;
-import ru.vaadinp.place.PlaceManager;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
 
 /**
@@ -14,7 +12,7 @@ import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
  * Отнаследуйте этот класс и поставьте аннотацию {@link DefaultFragmentSource}, генератор подставит вашу реализацию в
  * {@link PlaceManager}.
  */
-public class BaseUriFragmentSource implements UriFragmentSource, Cleanable {
+public class BaseUriFragmentSource implements UriFragmentSource {
 
 	/**
 	 * Слушатель изменения uri fragment

@@ -1,6 +1,5 @@
 package ru.vaadinp.uri.handlers;
 
-import ru.vaadinp.place.PlaceManager;
 
 /**
  * @author bellski

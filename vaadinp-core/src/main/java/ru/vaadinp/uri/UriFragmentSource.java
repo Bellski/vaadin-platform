@@ -1,6 +1,7 @@
 package ru.vaadinp.uri;
 
-import ru.vaadinp.place.PlaceManager;
+import ru.vaadinp.Cleanable;
+import ru.vaadinp.place.BasePlaceManager;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
 
 /**
@@ -11,7 +12,7 @@ import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
  * {@link BaseUriFragmentSource}
  * {@link PlaceUriFragmentSource}
  */
-public interface UriFragmentSource {
+public interface UriFragmentSource extends Cleanable {
 
 	/**
 	 * Установить слушателя изменения uri fragment
