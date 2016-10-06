@@ -3,7 +3,7 @@ package ru.vaadinp.test.handlers;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
-import ru.vaadinp.uri.UriFragmentSource;
+import ru.vaadinp.uri.BaseUriFragmentSource;
 
 /**
  * @author bellski
@@ -29,7 +29,7 @@ public class TestUriFragmentSource {
 	@Test
 	public void testChangeUri() throws Exception {
 
-		class ManualUriFragmentSource extends UriFragmentSource {
+		class ManualUriFragmentSource extends BaseUriFragmentSource {
 
 			/**
 			 * Изменить uri
