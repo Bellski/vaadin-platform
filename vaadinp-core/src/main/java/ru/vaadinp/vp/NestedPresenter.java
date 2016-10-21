@@ -40,4 +40,6 @@ public class NestedPresenter<VIEW extends View> extends PresenterComponent<VIEW>
 	public NestedVPComponent<? extends NestedPresenter<VIEW>, ?> getVpComponent() {
 		return (NestedVPComponent<? extends NestedPresenter<VIEW>, ?>) super.getVpComponent();
 	}
+
+
 }

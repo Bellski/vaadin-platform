@@ -5,7 +5,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import ru.vaadinp.compiler.datamodel.AnnotatedGenerateVPComponentClass;
-import ru.vaadinp.compiler.model.JavaClassModel;
+
 
 import java.io.IOException;
 import java.io.StringWriter;

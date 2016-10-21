@@ -27,6 +27,9 @@ public class BaseSlotRevealBus implements SlotRevealBus {
         providerMap.put(nestedSlot, vpComponent);
     }
 
+
+
+
     @Override
     public void fireReveal(NestedSlot slot, NestedPresenter<?> child) {
         final NestedVPComponent<?, ?> presenterProvider = providerMap.get(slot);

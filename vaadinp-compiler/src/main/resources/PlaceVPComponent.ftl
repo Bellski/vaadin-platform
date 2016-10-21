@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler.model.PlaceVPComponentModel" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.AnnotatedGenerateVPComponentClass" -->
 package ${packageName};
 
 import dagger.Binds;
@@ -16,28 +16,28 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class ${className} extends PlaceVPComponent<${presenterName}, ${viewName}> {
+public class ${componentName} extends PlaceVPComponent<${presenterImplName}, ${viewImplName}> {
 
     @Module
     public interface Declarations {
-    @Binds
-    VPComponent<? extends PresenterComponent<${viewApiClassName}>, ?> vpComponent(${className} vpComponent);
+        @Binds
+        VPComponent<? extends PresenterComponent<${viewApiName}>, ?> vpComponent(${componentName} vpComponent);
 
-    @Binds
-    ${viewApiClassName} view(${viewName} view);
+        @Binds
+        ${viewApiName} view(${viewImplName} view);
 
-    @Binds
-    ${presenterApiClassName} presenter(${presenterName} presenter);
+        @Binds
+        ${presenterApiName} presenter(${presenterImplName} presenter);
 
-    @IntoMap
-    @PlacesMap
-    @Binds
-    @StringKey(${presenterName}.NAME_TOKEN)
-        PlaceVPComponent<?, ?> place(${className} vp);
+        @IntoMap
+        @PlacesMap
+        @Binds
+        @StringKey(${presenterImplName}.NAME_TOKEN) PlaceVPComponent<?, ?> place(${componentName} vpComponent);
+
     }
 
     @Inject
-    public SimplePlaceVPComponent(Lazy<${presenterName}> lazyPresenterComponent, Lazy<${viewName}> lazyView, SlotRevealBus slotRevealBus) {
-        super(${presenterName}.NAME_TOKEN, lazyPresenterComponent, lazyView, slotRevealBus);
+    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent, Lazy<${viewImplName}> lazyView, SlotRevealBus slotRevealBus) {
+        super(${presenterImplName}.NAME_TOKEN, lazyPresenterComponent, lazyView, slotRevealBus);
     }
 }

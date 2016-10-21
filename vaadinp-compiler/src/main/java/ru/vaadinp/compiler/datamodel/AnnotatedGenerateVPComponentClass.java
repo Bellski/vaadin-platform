@@ -3,6 +3,7 @@ package ru.vaadinp.compiler.datamodel;
 import com.sun.tools.javac.code.Symbol;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 
 /**
  * Created by oem on 10/20/16.
@@ -20,6 +21,11 @@ public class AnnotatedGenerateVPComponentClass {
 	private TypeElement apiClassElement;
 
 	private TypeElement viewImplClassElement;
+
+	private VariableElement slotElement;
+
+	private VariableElement nameTokenElement;
+	private boolean hasNameToken;
 
 	public AnnotatedGenerateVPComponentClass(TypeElement classElement) {
 		presenterImplName = classElement.getSimpleName().toString();
@@ -48,10 +54,6 @@ public class AnnotatedGenerateVPComponentClass {
 		return slotName;
 	}
 
-	public void setSlotName(String slotName) {
-		this.slotName = slotName;
-		this.hasSlot = true;
-	}
 
 	public boolean hasSlot() {
 		return hasSlot;
@@ -96,5 +98,32 @@ public class AnnotatedGenerateVPComponentClass {
 
 	public String getPresenterApiName() {
 		return apiClassElement.getSimpleName().toString() + ".Presenter";
+	}
+
+	public VariableElement getSlotElement() {
+		return slotElement;
+	}
+
+	public void setSlotElement(VariableElement slotElement) {
+		if (slotElement != null) {
+			this.slotElement = slotElement;
+			this.hasSlot = true;
+			this.slotName = slotElement.getSimpleName().toString();
+		}
+	}
+
+	public VariableElement getNameTokenElement() {
+		return nameTokenElement;
+	}
+
+	public void setNameTokenElement(VariableElement nameTokenElement) {
+		if (nameTokenElement != null) {
+			this.nameTokenElement = nameTokenElement;
+			this.hasNameToken = true;
+		}
+	}
+
+	public boolean hasNameToken() {
+		return hasNameToken;
 	}
 }

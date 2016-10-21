@@ -32,7 +32,7 @@ public class SimplePlaceVPComponent extends PlaceVPComponent<SimplePlacePresente
 		@PlacesMap
 		@Binds
 		@StringKey(SimplePlacePresenter.NAME_TOKEN)
-		PlaceVPComponent<?, ?> place(SimplePlaceVPComponent vp);
+		PlaceVPComponent<?, ?> place(SimplePlaceVPComponent vpComponent);
 	}
 
 	@Inject

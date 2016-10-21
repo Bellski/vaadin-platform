@@ -11,7 +11,7 @@ import ru.vaadinp.vp.VPComponent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-<#if hasNestedSlot>
+<#if hasSlot()>
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
 import ru.vaadinp.annotations.dagger.IntoSlotMap;
@@ -30,7 +30,7 @@ public class ${componentName} extends NestedVPComponent<${presenterImplName}, ${
         VPComponent<? extends PresenterComponent<${viewApiName}>, ?> vpComponent(${componentName} vpComponent);
 
         @Binds
-        ${viewImplName} view(${viewImplName} view);
+        ${viewApiName} view(${viewImplName} view);
 
         @Binds
         ${presenterApiName} presenter(${presenterImplName} presenter);
