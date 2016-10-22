@@ -11,7 +11,7 @@ public class WithNestedSlotPresenter extends NestedPresenter<WithNestedSlot.View
 
 	public static final NestedSlot MAIN_SLOT = new NestedSlot();
 
-	public WithNestedSlotPresenter(WithNestedSlot.View view, @RevealIn(RootPresenter.class) NestedSlot nestedSlot) {
+	public WithNestedSlotPresenter(WithNestedSlot.View view, @RevealIn(RootPresenter1.class) NestedSlot nestedSlot) {
 		super(view, nestedSlot);
 	}
 }

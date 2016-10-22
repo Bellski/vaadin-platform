@@ -6,13 +6,14 @@ import dagger.Module;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import ru.vaadinp.annotations.dagger.PlacesMap;
-import ru.vaadinp.slot.SlotRevealBus;
 import ru.vaadinp.vp.PlaceVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
 import ru.vaadinp.vp.VPComponent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import ru.vaadinp.slot.root.RootVPComponent;
 
 @Singleton
 public class SimplePlaceVPComponent extends PlaceVPComponent<SimplePlacePresenter, SimplePlaceView> {
@@ -36,7 +37,10 @@ public class SimplePlaceVPComponent extends PlaceVPComponent<SimplePlacePresente
 	}
 
 	@Inject
-	public SimplePlaceVPComponent(Lazy<SimplePlacePresenter> lazyPresenterComponent, Lazy<SimplePlaceView> lazyView, SlotRevealBus slotRevealBus) {
-		super(SimplePlacePresenter.NAME_TOKEN, lazyPresenterComponent, lazyView, slotRevealBus);
+	public SimplePlaceVPComponent(Lazy<SimplePlacePresenter> lazyPresenterComponent,
+								  Lazy<SimplePlaceView> lazyView,
+								  RootVPComponent parent) {
+
+		super(SimplePlacePresenter.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
 	}
 }

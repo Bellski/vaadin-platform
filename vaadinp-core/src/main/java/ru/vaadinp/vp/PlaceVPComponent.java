@@ -14,35 +14,23 @@ public class PlaceVPComponent<PRESENTER extends NestedPresenter<?>, VIEW extends
 
 	private Lazy<Gatekeeper> lazyGatekeeper;
 
-	public PlaceVPComponent(String nameToken, Lazy<PRESENTER> lazyPresenterComponent, Lazy<VIEW> lazyView) {
-		this(nameToken, null, null, lazyPresenterComponent, lazyView, null);
-	}
-
 	public PlaceVPComponent(String nameToken,
 							Lazy<PRESENTER> lazyPresenterComponent,
 							Lazy<VIEW> lazyView,
-							SlotRevealBus slotRevealBus) {
+							NestedVPComponent<?, ?> parent) {
 
-		this(nameToken, null, null, lazyPresenterComponent, lazyView, slotRevealBus);
+		this(nameToken, null, null, lazyPresenterComponent, lazyView, parent);
 	}
 
-	public PlaceVPComponent(String nameToken,
-							String[] parameterNames,
-							int[] parameterIndexes,
-							Lazy<PRESENTER> lazyPresenterComponent,
-							Lazy<VIEW> lazyView) {
-
-		this(nameToken, parameterNames, parameterIndexes, lazyPresenterComponent, lazyView, null);
-	}
 
 	public PlaceVPComponent(String nameToken,
 							String[] parameterNames,
 							int[] parameterIndexes,
 							Lazy<PRESENTER> lazyPresenterComponent,
 							Lazy<VIEW> lazyView,
-							SlotRevealBus slotRevealBus) {
+							NestedVPComponent<?, ?> parent) {
 
-		super(lazyPresenterComponent, lazyView, slotRevealBus);
+		super(lazyPresenterComponent, lazyView, parent);
 
 		this.nameToken = nameToken;
 		this.parameterNames = parameterNames;

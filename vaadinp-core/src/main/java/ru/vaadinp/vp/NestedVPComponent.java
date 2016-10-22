@@ -9,20 +9,15 @@ import ru.vaadinp.slot.SlotRevealBus;
  */
 public class NestedVPComponent<PRESENTER extends NestedPresenter<?>, VIEW extends ViewImpl<?>> extends VPComponent<PRESENTER, VIEW> {
 
-	private final SlotRevealBus slotRevealBus;
+	private final NestedVPComponent<?, ?> parent;
 
-	public NestedVPComponent(Lazy<PRESENTER> lazyPresenterComponent, Lazy<VIEW> lazyView) {
-		this(lazyPresenterComponent, lazyView, null);
-	}
-
-	public NestedVPComponent(Lazy<PRESENTER> lazyPresenterComponent, Lazy<VIEW> lazyView, SlotRevealBus slotRevealBus) {
+	public NestedVPComponent(Lazy<PRESENTER> lazyPresenterComponent, Lazy<VIEW> lazyView, NestedVPComponent<?, ?> parent) {
 		super(lazyPresenterComponent, lazyView);
-		this.slotRevealBus = slotRevealBus;
+		this.parent = parent;
 	}
 
 	public void revealInSlot(NestedSlot nestedSlot, NestedPresenter<?> child) {
-		if (slotRevealBus != null) {
-			slotRevealBus.fireReveal(nestedSlot, child);
-		}
+		parent.getPresenter().forceReveal();
+		parent.getPresenter().setInSlot(nestedSlot, child);
 	}
 }

@@ -3,20 +3,17 @@ package ru.vaadinp.compiler.test.nestedWithNestedSlot;
 import dagger.Binds;
 import dagger.Lazy;
 import dagger.Module;
-import ru.vaadinp.slot.SlotRevealBus;
+import dagger.Provides;
+import ru.vaadinp.annotations.dagger.RevealIn;
+import ru.vaadinp.slot.NestedSlot;
 import ru.vaadinp.vp.NestedVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
 import ru.vaadinp.vp.VPComponent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import dagger.Provides;
-import dagger.multibindings.IntoSet;
-import ru.vaadinp.annotations.dagger.IntoSlotMap;
-import ru.vaadinp.annotations.dagger.RevealIn;
-import ru.vaadinp.slot.NestedSlot;
-import java.util.AbstractMap;
-import java.util.Map;
+
+import ru.vaadinp.slot.root.RootVPComponent;
 
 @Singleton
 public class WithNestedSlotVPComponent extends NestedVPComponent<WithNestedSlotPresenter, WithNestedSlotView> {
@@ -35,14 +32,6 @@ public class WithNestedSlotVPComponent extends NestedVPComponent<WithNestedSlotP
 
 		@Provides
 		@Singleton
-		@IntoSlotMap
-		@IntoSet
-		static Map.Entry<NestedSlot, NestedVPComponent<?, ?>> bindNestedSlot(WithNestedSlotVPComponent vpComponent) {
-			return new AbstractMap.SimpleImmutableEntry<>(WithNestedSlotPresenter.MAIN_SLOT, vpComponent);
-		}
-
-		@Provides
-		@Singleton
 		@RevealIn(WithNestedSlotPresenter.class)
 		static NestedSlot nestedSlot() {
 			return WithNestedSlotPresenter.MAIN_SLOT;
@@ -51,7 +40,10 @@ public class WithNestedSlotVPComponent extends NestedVPComponent<WithNestedSlotP
 	}
 
 	@Inject
-	public WithNestedSlotVPComponent(Lazy<WithNestedSlotPresenter> lazyPresenterComponent, Lazy<WithNestedSlotView> lazyView, SlotRevealBus slotRevealBus) {
-		super(lazyPresenterComponent, lazyView, slotRevealBus);
+	public WithNestedSlotVPComponent(Lazy<WithNestedSlotPresenter> lazyPresenterComponent,
+									 Lazy<WithNestedSlotView> lazyView,
+									 RootVPComponent parent) {
+
+		super(lazyPresenterComponent, lazyView, parent);
 	}
 }

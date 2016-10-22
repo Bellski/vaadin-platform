@@ -8,8 +8,13 @@ import dagger.Lazy;
 public class TabPlaceVPComponent<PRESENTER extends NestedPresenter<?>, TAB_CONTAINER extends TabContainerVPComponent<?, ?>, VIEW extends ViewImpl<?>> extends PlaceVPComponent<PRESENTER, VIEW> {
 	private Tab tab;
 
-	public TabPlaceVPComponent(String nameToken, Lazy<PRESENTER> lazyPresenterComponent, TAB_CONTAINER tabContainer, Lazy<VIEW> lazyView) {
-		this(nameToken, null, null, lazyPresenterComponent, tabContainer, lazyView);
+	public TabPlaceVPComponent(String nameToken,
+							   Lazy<PRESENTER> lazyPresenterComponent,
+							   TAB_CONTAINER tabContainer,
+							   Lazy<VIEW> lazyView,
+							   NestedVPComponent<?, ?> parent) {
+
+		this(nameToken, null, null, lazyPresenterComponent, tabContainer, lazyView, parent);
 	}
 
 	public TabPlaceVPComponent(String nameToken,
@@ -17,8 +22,10 @@ public class TabPlaceVPComponent<PRESENTER extends NestedPresenter<?>, TAB_CONTA
 							   int[] parameterIndexes,
 							   Lazy<PRESENTER> lazyPresenterComponent,
 							   TAB_CONTAINER tabContainer,
-							   Lazy<VIEW> lazyView) {
-		super(nameToken, parameterNames, parameterIndexes, lazyPresenterComponent, lazyView);
+							   Lazy<VIEW> lazyView,
+							   NestedVPComponent<?, ?> parent) {
+
+		super(nameToken, parameterNames, parameterIndexes, lazyPresenterComponent, lazyView, parent);
 
 		tabContainer.addTab(this);
 	}

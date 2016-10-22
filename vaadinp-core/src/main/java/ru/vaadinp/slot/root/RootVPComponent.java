@@ -25,17 +25,8 @@ public class RootVPComponent extends NestedVPComponent<RootPresenter, RootView> 
 
 	@Module
 	public interface Declarations  {
-
 		@Binds
 		VPComponent<? extends PresenterComponent<RootView>, ?> vpComponent(RootVPComponent vpComponent);
-
-		@Provides
-		@Singleton
-		@IntoSlotMap
-		@IntoSet
-		static Map.Entry<NestedSlot, NestedVPComponent<?, ?>> bindNestedSlot(RootVPComponent vpComponent) {
-			return new AbstractMap.SimpleImmutableEntry<>(RootPresenter.ROOT_SLOT, vpComponent);
-		}
 
 		@Provides
 		@Singleton
@@ -43,12 +34,11 @@ public class RootVPComponent extends NestedVPComponent<RootPresenter, RootView> 
 		static NestedSlot nestedSlot() {
 			return RootPresenter.ROOT_SLOT;
 		}
-
 	}
 
 	@Inject
 	public RootVPComponent(Lazy<RootPresenter> lazyPresenterComponent, Lazy<RootView> lazyView) {
-		super(lazyPresenterComponent, lazyView);
+		super(lazyPresenterComponent, lazyView, null);
 	}
 
 }

@@ -8,6 +8,7 @@ import ru.vaadinp.vp.NestedPresenter;
 
 @GenerateVPComponent
 public class SimpleNestedPresenter extends NestedPresenter<SimpleNested.View> implements SimpleNested.Presenter {
+
 	public SimpleNestedPresenter(SimpleNested.View view, @RevealIn(RootPresenter.class) NestedSlot nestedSlot) {
 		super(view, nestedSlot);
 	}

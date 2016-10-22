@@ -7,6 +7,7 @@ import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import ru.vaadinp.annotations.dagger.PlacesMap;
 import ru.vaadinp.slot.SlotRevealBus;
+import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.vp.PlaceVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
 import ru.vaadinp.vp.VPComponent;
@@ -45,8 +46,8 @@ public class BaseErrorPlaceVPComponent extends PlaceVPComponent<BaseErrorPresent
 	@Inject
 	public BaseErrorPlaceVPComponent(Lazy<BaseErrorPresenter> lazyPresenterComponent,
 									 Lazy<BaseErrorView> lazyView,
-									 SlotRevealBus slotRevealBus) {
+									 RootVPComponent parent) {
 
-		super(NAME_TOKEN, lazyPresenterComponent, lazyView, slotRevealBus);
+		super(NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
 	}
 }

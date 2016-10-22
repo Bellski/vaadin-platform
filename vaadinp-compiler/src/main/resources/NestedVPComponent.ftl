@@ -13,13 +13,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 <#if hasSlot()>
 import dagger.Provides;
-import dagger.multibindings.IntoSet;
-import ru.vaadinp.annotations.dagger.IntoSlotMap;
 import ru.vaadinp.annotations.dagger.RevealIn;
 import ru.vaadinp.slot.NestedSlot;
-import java.util.AbstractMap;
-import java.util.Map;
 </#if>
+import ${parentQualifiedName};
 
 @Singleton
 public class ${componentName} extends NestedVPComponent<${presenterImplName}, ${viewImplName}> {
@@ -38,14 +35,6 @@ public class ${componentName} extends NestedVPComponent<${presenterImplName}, ${
         <#if hasSlot()>
         @Provides
         @Singleton
-        @IntoSlotMap
-        @IntoSet
-        static Map.Entry<NestedSlot, NestedVPComponent<?, ?>> bindNestedSlot(${componentName} vpComponent) {
-            return new AbstractMap.SimpleImmutableEntry<>(${presenterImplName}.${slotName}, vpComponent);
-        }
-
-        @Provides
-        @Singleton
         @RevealIn(${presenterImplName}.class)
         static NestedSlot nestedSlot() {
             return ${presenterImplName}.${slotName};
@@ -54,7 +43,10 @@ public class ${componentName} extends NestedVPComponent<${presenterImplName}, ${
     }
 
     @Inject
-    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent, Lazy<${viewImplName}> lazyView, SlotRevealBus slotRevealBus) {
-        super(lazyPresenterComponent, lazyView, slotRevealBus);
+    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent,
+                            Lazy<${viewImplName}> lazyView,
+                            ${parentName} parent) {
+
+        super(lazyPresenterComponent, lazyView, parent);
     }
 }

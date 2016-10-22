@@ -1,6 +1,7 @@
 package ru.vaadinp.compiler.datamodel;
 
 import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -25,7 +26,12 @@ public class AnnotatedGenerateVPComponentClass {
 	private VariableElement slotElement;
 
 	private VariableElement nameTokenElement;
+
 	private boolean hasNameToken;
+
+	private boolean hasParent;
+	private TypeElement parent;
+
 
 	public AnnotatedGenerateVPComponentClass(TypeElement classElement) {
 		presenterImplName = classElement.getSimpleName().toString();
@@ -125,5 +131,24 @@ public class AnnotatedGenerateVPComponentClass {
 
 	public boolean hasNameToken() {
 		return hasNameToken;
+	}
+
+	public boolean hasParent() {
+		return hasParent;
+	}
+
+	public String getParentQualifiedName() {
+		return parent.getQualifiedName().toString();
+	}
+
+	public String getParentName() {
+		return parent.getSimpleName().toString();
+	}
+
+	public void setParent(TypeElement parent) {
+		if (parent != null) {
+			this.parent = parent;
+			this.hasParent = true;
+		}
 	}
 }

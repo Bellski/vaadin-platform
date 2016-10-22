@@ -20,9 +20,8 @@ import java.util.HashSet;
  */
 @RunWith(JUnit4.class)
 public class NestedPresenterTest {
-	private final SlotRevealBus slotRevealBus = new BaseSlotRevealBus(new HashSet<>());
 
-	private final RootVPComponent rootVPComponent = MockUtils.mockRootVP(slotRevealBus);
+	private final RootVPComponent rootVPComponent = MockUtils.mockRootVP();
 
 	@Test
 	@Ignore

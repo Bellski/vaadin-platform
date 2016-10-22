@@ -24,7 +24,7 @@ public class JavaSourceGenerator {
     private JavaSourceGenerator() {
     }
 
-    public static String generateJavaSource(AnnotatedGenerateVPComponentClass javaClassModel, String templateName) throws IOException, TemplateException {
+    public static String generateJavaSource(Object javaClassModel, String templateName) throws IOException, TemplateException {
         final Template template = configuration.getTemplate(templateName);
 
         try(final StringWriter stringWriter = new StringWriter()) {

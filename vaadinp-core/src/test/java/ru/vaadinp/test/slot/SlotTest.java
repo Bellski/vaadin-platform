@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import ru.vaadinp.slot.BaseSlotRevealBus;
 import ru.vaadinp.slot.SlotRevealBus;
+import ru.vaadinp.slot.root.RootPresenter;
 import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.test.MockUtils;
 import ru.vaadinp.vp.NestedVPComponent;
@@ -20,16 +21,15 @@ import static ru.vaadinp.test.MockUtils.mockRootVP;
  */
 @RunWith(JUnit4.class)
 public class SlotTest {
-	private final SlotRevealBus slotRevealBus = new BaseSlotRevealBus(new HashSet<>());
 
-	private final RootVPComponent rootVPComponent = mockRootVP(slotRevealBus);
+	private final RootVPComponent rootVPComponent = mockRootVP();
 
 	private final NestedVPComponent<?, ?> aVPComponent = MockUtils.mockNestedVP(
-		DoubleCheck.lazy(PresenterAMock::new), slotRevealBus, PresenterAMock.MAIN_SLOT, true
+		DoubleCheck.lazy(PresenterAMock::new), rootVPComponent, RootPresenter.ROOT_SLOT
 	);
 
 	private final NestedVPComponent<?, ?> bVPComponent = MockUtils.mockNestedVP(
-		DoubleCheck.lazy(PresenterBMock::new), slotRevealBus, PresenterAMock.MAIN_SLOT, false
+		DoubleCheck.lazy(PresenterBMock::new), aVPComponent, PresenterAMock.MAIN_SLOT
 	);
 
 	@Test

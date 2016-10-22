@@ -14,36 +14,21 @@ public class TabContainerVPComponent<PRESENTER extends NestedPresenter<?>, VIEW 
 
 	public TabContainerVPComponent(String nameToken,
 								   Lazy<PRESENTER> lazyPresenterComponent,
-								   Lazy<VIEW> lazyView) {
-
-		super(nameToken, lazyPresenterComponent, lazyView);
-	}
-
-	public TabContainerVPComponent(String nameToken,
-								   Lazy<PRESENTER> lazyPresenterComponent,
 								   Lazy<VIEW> lazyView,
-								   SlotRevealBus slotRevealBus) {
+								   NestedVPComponent<?, ?> parent) {
 
-		super(nameToken, lazyPresenterComponent, lazyView, slotRevealBus);
+		super(nameToken, lazyPresenterComponent, lazyView, parent);
 	}
 
-	public TabContainerVPComponent(String nameToken,
-								   String[] parameterNames,
-								   int[] parameterIndexes,
-								   Lazy<PRESENTER> lazyPresenterComponent,
-								   Lazy<VIEW> lazyView) {
-
-		super(nameToken, parameterNames, parameterIndexes, lazyPresenterComponent, lazyView);
-	}
 
 	public TabContainerVPComponent(String nameToken,
 								   String[] parameterNames,
 								   int[] parameterIndexes,
 								   Lazy<PRESENTER> lazyPresenterComponent,
 								   Lazy<VIEW> lazyView,
-								   SlotRevealBus slotRevealBus) {
+								   NestedVPComponent<?, ?> parent) {
 
-		super(nameToken, parameterNames, parameterIndexes, lazyPresenterComponent, lazyView, slotRevealBus);
+		super(nameToken, parameterNames, parameterIndexes, lazyPresenterComponent, lazyView, parent);
 	}
 
 

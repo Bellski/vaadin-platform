@@ -15,6 +15,8 @@ import ru.vaadinp.vp.VPComponent;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import ${parentQualifiedName};
+
 @Singleton
 public class ${componentName} extends PlaceVPComponent<${presenterImplName}, ${viewImplName}> {
 
@@ -29,6 +31,15 @@ public class ${componentName} extends PlaceVPComponent<${presenterImplName}, ${v
         @Binds
         ${presenterApiName} presenter(${presenterImplName} presenter);
 
+        <#if hasSlot()>
+        @Provides
+        @Singleton
+        @RevealIn(${presenterImplName}.class)
+        static NestedSlot nestedSlot() {
+            return ${presenterImplName}.${slotName};
+        }
+        </#if>
+
         @IntoMap
         @PlacesMap
         @Binds
@@ -37,7 +48,10 @@ public class ${componentName} extends PlaceVPComponent<${presenterImplName}, ${v
     }
 
     @Inject
-    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent, Lazy<${viewImplName}> lazyView, SlotRevealBus slotRevealBus) {
-        super(${presenterImplName}.NAME_TOKEN, lazyPresenterComponent, lazyView, slotRevealBus);
+    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent,
+                            Lazy<${viewImplName}> lazyView,
+                            ${parentName} parent) {
+
+        super(${presenterImplName}.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
     }
 }

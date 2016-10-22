@@ -10,10 +10,6 @@ public class NestedPresenter<VIEW extends View> extends PresenterComponent<VIEW>
 
 	private final NestedSlot nestedSlot;
 
-	public NestedPresenter(VIEW view) {
-		this(view, null);
-	}
-
 	public NestedPresenter(VIEW view, NestedSlot nestedSlot) {
 		super(view);
 
@@ -40,6 +36,5 @@ public class NestedPresenter<VIEW extends View> extends PresenterComponent<VIEW>
 	public NestedVPComponent<? extends NestedPresenter<VIEW>, ?> getVpComponent() {
 		return (NestedVPComponent<? extends NestedPresenter<VIEW>, ?>) super.getVpComponent();
 	}
-
 
 }

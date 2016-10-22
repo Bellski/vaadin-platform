@@ -7,10 +7,6 @@ import ru.vaadinp.slot.NestedSlot;
  */
 public class TabContainerNestedPresenter<VIEW extends View & TabContainer> extends NestedPresenter<VIEW>  {
 
-	public TabContainerNestedPresenter(VIEW view) {
-		this(view, null);
-	}
-
 	public TabContainerNestedPresenter(VIEW view, NestedSlot nestedSlot) {
 		super(view, nestedSlot);
 	}

@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.AnnotatedGenerateVPComponentClass" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.processors.GenerateVPComponentModel" -->
 package ${packageName};
 
 import dagger.Lazy;
@@ -10,22 +10,22 @@ import ru.vaadinp.vp.PresenterComponent;
 import ru.vaadinp.vp.VPComponent;
 
 @Singleton
-public class ${componentName} extends VPComponent<${presenterImplName}, ${viewImplName}> {
+public class ${name} extends VPComponent<${presenterComponent.name}, ${presenterComponent.viewMirror.name}> {
 
     @Module
     public interface Declarations {
         @Binds
-        VPComponent<? extends PresenterComponent<${viewApiName}>, ?> vpComponent(${componentName} vpComponent);
+        VPComponent<? extends PresenterComponent<${presenterComponent.apiMirror.viewApiName}>, ?> vpComponent(${name} vpComponent);
 
         @Binds
-        ${viewApiName} view(${viewImplName} view);
+        ${presenterComponent.apiMirror.viewApiName} view(${presenterComponent.viewMirror.name} view);
 
         @Binds
-        ${presenterApiName} presenter(${presenterImplName} presenter);
+        ${presenterComponent.apiMirror.presenterApiName} presenter(${presenterComponent.name} presenter);
     }
 
     @Inject
-    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent, Lazy<${viewImplName}> lazyView) {
+    public ${name}(Lazy<${presenterComponent.name}> lazyPresenterComponent, Lazy<${presenterComponent.viewMirror.name}> lazyView) {
         super(lazyPresenterComponent, lazyView);
     }
 }

@@ -33,13 +33,11 @@ import static ru.vaadinp.test.MockUtils.*;
 public class BasePlaceManagerTest {
 	public final static String DEFAULT_NAME_TOKEN = "!/dummyDefaultPlace";
 
-	private final BaseSlotRevealBus baseSlotRevealBus = new BaseSlotRevealBus(new HashSet<>());
+	private final RootVPComponent rootVPComponent = mockRootVP();
 
-	private final RootVPComponent rootVPComponent = mockRootVP(baseSlotRevealBus);
-
-	private final PlaceVPComponent<?, ?> defaultVP = (PlaceVPComponent<?, ?>) mockNestedVP(DEFAULT_NAME_TOKEN, baseSlotRevealBus, RootPresenter.ROOT_SLOT, false);
-	private final BaseErrorPlaceVPComponent baseErrorVP = mockBaseBaseErrorPlaceVP(baseSlotRevealBus);
-	private final BaseNotFoundPlaceVPComponent baseNotFoundPlaceVP = mockBaseNotFoundVP(baseSlotRevealBus);
+	private final PlaceVPComponent<?, ?> defaultVP = (PlaceVPComponent<?, ?>) mockNestedVP(DEFAULT_NAME_TOKEN, rootVPComponent, RootPresenter.ROOT_SLOT);
+	private final BaseErrorPlaceVPComponent baseErrorVP = mockBaseBaseErrorPlaceVP(rootVPComponent);
+	private final BaseNotFoundPlaceVPComponent baseNotFoundPlaceVP = mockBaseNotFoundVP(rootVPComponent);
 
 
 	final Map<String, PlaceVPComponent<?, ?>> placeByNameToken = new HashMap<>(); {

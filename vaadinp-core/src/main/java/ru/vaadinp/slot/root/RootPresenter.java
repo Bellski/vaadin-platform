@@ -17,12 +17,17 @@ public class RootPresenter extends NestedPresenter<RootView> implements Presente
 
 	@Inject
 	public RootPresenter(RootView view) {
-		super(view);
+		super(view, null);
 		setVisible(true);
 	}
 
 	@Override
 	public Component asComponent() {
 		throw new IllegalStateException("Root getView has no Component, you should never call asComponent()");
+	}
+
+	@Override
+	public void forceReveal() {
+
 	}
 }
