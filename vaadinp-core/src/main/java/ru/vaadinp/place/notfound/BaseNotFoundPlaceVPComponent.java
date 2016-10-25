@@ -6,7 +6,6 @@ import dagger.Module;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import ru.vaadinp.annotations.dagger.PlacesMap;
-import ru.vaadinp.slot.SlotRevealBus;
 import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.vp.PlaceVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
@@ -19,34 +18,32 @@ import javax.inject.Singleton;
  * Created by oem on 10/7/16.
  */
 @Singleton
-public class BaseNotFoundPlaceVPComponent extends PlaceVPComponent<BaseNotFoundPresenter, BaseNotFoundView> {
+public class BaseNotFoundPlaceVPComponent extends PlaceVPComponent<BaseNotFoundPlacePresenter, BaseNotFoundPlaceView> {
 	@Module
 	public interface Declarations {
 
 		@Binds
-		VPComponent<? extends PresenterComponent<BaseNotFound.View>, ?> vpComponent(BaseNotFoundPlaceVPComponent vpComponent);
+		VPComponent<? extends PresenterComponent<BaseNotFoundPlace.View>, ?> vpComponent(BaseNotFoundPlaceVPComponent vpComponent);
 
 		@Binds
-		BaseNotFound.Presenter baseNotFoundPresenter(BaseNotFoundPresenter presenter);
+		BaseNotFoundPlace.Presenter baseNotFoundPresenter(BaseNotFoundPlacePresenter presenter);
 
 		@Binds
-		BaseNotFound.View baseNotFoundView(BaseNotFoundView view);
+		BaseNotFoundPlace.View baseNotFoundView(BaseNotFoundPlaceView view);
 
 		@Binds
 		@IntoMap
 		@PlacesMap
-		@StringKey(NAME_TOKEN)
+		@StringKey(BaseNotFoundPlacePresenter.NAME_TOKEN)
 		PlaceVPComponent<?, ?> baseNotFoundPlace(BaseNotFoundPlaceVPComponent vpComponent);
 	}
 
-	public static final String NAME_TOKEN = "!/vaadinp-notfound";
-
 
 	@Inject
-	public BaseNotFoundPlaceVPComponent(Lazy<BaseNotFoundPresenter> lazyPresenterComponent,
-										Lazy<BaseNotFoundView> lazyView,
+	public BaseNotFoundPlaceVPComponent(Lazy<BaseNotFoundPlacePresenter> lazyPresenterComponent,
+										Lazy<BaseNotFoundPlaceView> lazyView,
 										RootVPComponent parent) {
 		
-		super(NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
+		super(BaseNotFoundPlacePresenter.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
 	}
 }

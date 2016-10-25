@@ -1,266 +1,225 @@
 package ru.vaadinp.compiler.processors;
 
-import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Symbol;
 import freemarker.template.TemplateException;
-import ru.vaadinp.annotations.GenerateNameToken;
 import ru.vaadinp.annotations.GenerateVPComponent;
-import ru.vaadinp.annotations.dagger.RevealIn;
 import ru.vaadinp.compiler.JavaSourceGenerator;
-import ru.vaadinp.compiler.datamodel.AnnotatedGenerateVPComponentClass;
-import ru.vaadinp.compiler.datamodel.Parent;
-import ru.vaadinp.slot.NestedSlot;
+import ru.vaadinp.compiler.datamodel.*;
+import ru.vaadinp.compiler.datamodel.vaadinpmodule.GenerateVaadinPlatformModuleModel;
+import ru.vaadinp.place.error.BaseErrorPlacePresenter;
+import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
 import ru.vaadinp.vp.NestedPresenter;
 import ru.vaadinp.vp.PresenterComponent;
 
 import javax.annotation.processing.*;
-import javax.lang.model.element.*;
-import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Created by oem on 10/20/16.
+ * Created by Aleksandr on 23.10.2016.
  */
 public class VaadinPlatformProcessor1 extends AbstractProcessor {
-	private Messager messager;
-	private Types typeUtils;
-	private Elements elementUtils;
-	private Filer filer;
 
-	private Trees trees;
+    private Messager messager;
+    private Types typeUtils;
+    private Elements elementUtils;
+    private Filer filer;
 
-	@Override
-	public synchronized void init(ProcessingEnvironment processingEnv) {
-		super.init(processingEnv);
-		messager = processingEnv.getMessager();
-		typeUtils = processingEnv.getTypeUtils();
-		elementUtils = processingEnv.getElementUtils();
-		filer = processingEnv.getFiler();
-
-		trees = Trees.instance(processingEnv);
-	}
-
-	@Override
-	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-		for (Element element : roundEnv.getElementsAnnotatedWith(GenerateVPComponent.class)) {
-			final AnnotatedGenerateVPComponentClass vPComponentClass = new AnnotatedGenerateVPComponentClass((TypeElement) element);
-
-			try {
-				isValidClass(vPComponentClass);
-
-				final JavaFileObject simpleVPComponentSource = filer.createSourceFile(vPComponentClass.getQualifiedName());
+    private final Set<GenerateVPComponentModel> vpComponents = new LinkedHashSet<>();
+    private final Map<TypeElement, GenerateNestedVPComponentModel> vpComponentByPresenterTypeElement = new HashMap<>();
 
 
-				try (Writer writer = simpleVPComponentSource.openWriter()) {
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
 
-					if (isPresenterComponent((TypeElement) element)) {
-						writer.write(JavaSourceGenerator.generateJavaSource(vPComponentClass, "SimpleVPComponent.ftl"));
-					} if (isNestedPresenter((TypeElement) element)) {
-						vPComponentClass.setSlotElement(getNestedSlot((TypeElement) element));
-						vPComponentClass.setNameTokenElement(getNameToken((TypeElement) element));
-						
-						getParent((TypeElement) element);
+        messager = processingEnv.getMessager();
+        typeUtils = processingEnv.getTypeUtils();
+        elementUtils = processingEnv.getElementUtils();
+        filer = processingEnv.getFiler();
+    }
 
-						if (vPComponentClass.hasNameToken()) {
-							writer.write(JavaSourceGenerator.generateJavaSource(vPComponentClass, "PlaceVPComponent.ftl"));
-						} else {
-							writer.write(JavaSourceGenerator.generateJavaSource(vPComponentClass, "NestedVPComponent.ftl"));
-						}
-					}
-				} catch (TemplateException e) {
-					messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-				}
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (annotations.size() > 0) {
 
-			} catch (IllegalStateException | IOException e) {
-				messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-			}
-		}
+            GenerateNestedVPComponentModel rootComponent = null;
 
-		return true;
-	}
+            GenerateNestedVPComponentModel defaultComponent = null;
+            GenerateNestedVPComponentModel notFoundComponent = null;
+            GenerateNestedVPComponentModel errorComponent = null;
 
+            for (Element element : roundEnv.getElementsAnnotatedWith(GenerateVPComponent.class)) {
 
-	private void isValidClass(AnnotatedGenerateVPComponentClass vPComponentClass) throws IllegalStateException {
-		isValidPrefix(vPComponentClass);
-		isApiFound(vPComponentClass);
-		checkViewImpl(vPComponentClass);
-	}
+                if(isPresenterComponent((TypeElement) element)) {
+                    final GenerateVPComponentModel vpComponent = new VPComponentScanner(elementUtils, typeUtils).scan(element);
+                    vpComponents.add(vpComponent);
 
-	private void isValidPrefix(AnnotatedGenerateVPComponentClass vpComponentClass) {
-		if (!vpComponentClass.getPresenterImplName().endsWith("Presenter")) {
-			throw new IllegalStateException(
-				String.format(
-					"Имя %s должно оканчиваться на Presenter",
-					vpComponentClass.getClassElement().getQualifiedName()
-				)
-			);
-		}
-	}
+                    try (Writer writer = filer.createSourceFile(vpComponent.getFqn()).openWriter()) {
+                        writer.write(JavaSourceGenerator.generateJavaSource(vpComponent, "SimpleVPComponent.ftl"));
+                    } catch (TemplateException | IOException e) {
+                        e.printStackTrace();
+                    }
 
-	private void isApiFound(AnnotatedGenerateVPComponentClass vPComponentClass) {
-		final String possibleApi = vPComponentClass
-			.getPresenterImplName()
-			.substring(0, vPComponentClass.getPresenterImplName().length() - "Presenter".length());
+                } else if (isNestedPresenter((TypeElement) element)) {
+                    final GenerateNestedVPComponentModel nestedVPComponent = (GenerateNestedVPComponentModel) new NestedVPComponentScanner(elementUtils, typeUtils).scan(element);
+                    vpComponentByPresenterTypeElement.put(nestedVPComponent.getPresenterComponent().getPresenterElement(), nestedVPComponent);
 
-		final TypeElement api = elementUtils.getTypeElement(vPComponentClass.getPackageName() + "." + possibleApi);
+                    if (nestedVPComponent.isRoot()) {
+                        rootComponent = nestedVPComponent;
+                    }
 
-		if (api == null) {
-			throw new IllegalStateException(
-				String.format("Api %s не найдено", vPComponentClass.getPackageName() + "." + possibleApi)
-			);
-		}
+                    if (nestedVPComponent.getPresenterComponent().isDefault()) {
+                        defaultComponent = nestedVPComponent;
+                    }
 
-		vPComponentClass.setApiClassElement(api);
-	}
+                    if (nestedVPComponent.getPresenterComponent().isNotFound()) {
+                        notFoundComponent = nestedVPComponent;
+                    }
 
-	private void checkViewImpl(AnnotatedGenerateVPComponentClass vPComponentClass) {
-		final String possibleViewName = vPComponentClass
-			.getApiClassElement()
-			.getQualifiedName()
-			.toString() + "View";
+                    if (nestedVPComponent.getPresenterComponent().isError()) {
+                        errorComponent = nestedVPComponent;
+                    }
+                }
 
-		final TypeElement possibleViewImpl = elementUtils.getTypeElement(possibleViewName);
+            }
 
-		if (possibleViewImpl == null) {
-			throw new IllegalStateException(
-				String.format("View %s не найдено", vPComponentClass.getPackageName() + "." + possibleViewName)
-			);
-		}
+            for (GenerateNestedVPComponentModel generateNestedVPComponentModel : vpComponentByPresenterTypeElement.values()) {
+                if (generateNestedVPComponentModel.getParent() == null) {
+                    generateNestedVPComponentModel.setParent(vpComponentByPresenterTypeElement.get(generateNestedVPComponentModel.getParentPresenterElement()));
+                }
 
-		vPComponentClass.setViewImplClassElement(possibleViewImpl);
-	}
+                try (Writer writer = filer.createSourceFile(generateNestedVPComponentModel.getFqn()).openWriter()) {
 
-	private boolean isPresenterComponent(TypeElement presenter) {
-		return typeUtils.isSameType(
-			typeUtils
-				.asElement(
-					presenter.getSuperclass()
-				).asType(),
-			elementUtils.getTypeElement(
-				PresenterComponent
-					.class
-					.getName()
-			).asType()
-		);
-	}
+                    if (generateNestedVPComponentModel.getPresenterComponent().getNameToken() == null) {
+                        writer.write(JavaSourceGenerator.generateJavaSource(generateNestedVPComponentModel, "NestedVPComponent.ftl"));
+                    } else {
+                        writer.write(JavaSourceGenerator.generateJavaSource(generateNestedVPComponentModel, "PlaceVPComponent.ftl"));
+                    }
 
-	private boolean isNestedPresenter(TypeElement presenter) {
-		return typeUtils.isSameType(
-			typeUtils
-				.asElement(
-					presenter.getSuperclass()
-				).asType(),
-			elementUtils.getTypeElement(
-				NestedPresenter
-					.class
-					.getName()
-			).asType()
-		);
-	}
+                } catch (TemplateException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (rootComponent != null) {
+                final GenerateVaadinPlatformModuleModel generateVaadinPlatformModuleModel = new GenerateVaadinPlatformModuleModel(
+                        rootComponent.getPackageName(),
+                        vpComponents,
+                        vpComponentByPresenterTypeElement.values()
+                );
 
 
-	private VariableElement getNestedSlot(TypeElement nestedPresenterElement) {
-		VariableElement slot = null;
+                if (notFoundComponent == null) {
+                    final TypeElement notFoundPlaceTypeElement = elementUtils.getTypeElement(BaseNotFoundPlacePresenter.class.getName());
 
-		for (Element element : elementUtils.getAllMembers(nestedPresenterElement)) {
-			if (element.getKind() == ElementKind.FIELD) {
-				final VariableElement variableElement = (VariableElement) element;
+                    final ApiMirror api = getApi(notFoundPlaceTypeElement);
 
-				if (typeUtils.isSameType(variableElement.asType(), elementUtils.getTypeElement(NestedSlot.class.getName()).asType())) {
-					slot = variableElement;
+                    notFoundComponent = new GenerateNestedVPComponentModel(new AnnotatedNestedPresenter(notFoundPlaceTypeElement, api, getView(api)));
+                }
 
-					if (!isPublicStaticFinalField(slot)) {
-						throw new IllegalStateException(
-								String.format("%s должен быть public static final", variableElement)
-						);
-					}
+                generateVaadinPlatformModuleModel.setNotFoundPlace(notFoundComponent);
 
-					break;
-				}
+                if (defaultComponent == null) {
+                    defaultComponent = notFoundComponent;
+                }
 
-				break;
-			}
-		}
+                generateVaadinPlatformModuleModel.setDefaultPlace(defaultComponent);
 
-		return slot;
-	}
+                if (errorComponent == null) {
+                    final TypeElement notFoundPlaceTypeElement = elementUtils.getTypeElement(BaseErrorPlacePresenter.class.getName());
 
-	private Parent getParent(TypeElement nestedPresenterElement) {
-		Parent parent = null;
+                    final ApiMirror api = getApi(notFoundPlaceTypeElement);
 
-		for (Element element : elementUtils.getAllMembers(nestedPresenterElement)) {
-			if (element.getKind() == ElementKind.CONSTRUCTOR) {
-				final  ExecutableElement executableElement = (ExecutableElement) element;
+                    errorComponent = new GenerateNestedVPComponentModel(new AnnotatedNestedPresenter(notFoundPlaceTypeElement, api, getView(api)));
+                }
 
-				for (VariableElement variableElement : executableElement.getParameters()) {
-					final RevealIn revealInAnnotation = variableElement.getAnnotation(RevealIn.class);
+                generateVaadinPlatformModuleModel.setErrorPlace(errorComponent);
 
-					if (typeUtils.isSameType(variableElement.asType(), elementUtils.getTypeElement(NestedSlot.class.getName()).asType())) {
-						if (revealInAnnotation == null) {
-							throw new IllegalStateException(
-								String.format("%s забыли аннотацию %s", variableElement, RevealIn.class)
-							);
-						}
-
-						try {
-							revealInAnnotation.value();
-						} catch (MirroredTypeException e) {
-							final TypeElement parentPresenter = (TypeElement) typeUtils.asElement(e.getTypeMirror());
-							final String parentPresenterName = parentPresenter.getSimpleName().toString();
-							final String packageName = ((Symbol) parentPresenter).packge().getQualifiedName().toString();
+                try (Writer writer = filer.createSourceFile(generateVaadinPlatformModuleModel.getFqn()).openWriter()) {
+                    writer.write(JavaSourceGenerator.generateJavaSource(generateVaadinPlatformModuleModel, "VaadinPlatformModule.ftl"));
+                } catch (TemplateException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
 
-						}
-					}
-				}
-			}
-		}
+        }
 
-		return parent;
-	}
 
-	private VariableElement getNameToken(TypeElement nestedPresenterElement) {
-		VariableElement nameToken = null;
 
-		for (Element element : elementUtils.getAllMembers(nestedPresenterElement)) {
-			if (element.getKind() == ElementKind.FIELD && element.getAnnotation(GenerateNameToken.class) != null) {
-				nameToken = (VariableElement) element;
+        return true;
+    }
 
-				if (!typeUtils.isSameType(nameToken.asType(), elementUtils.getTypeElement(String.class.getName()).asType())) {
-					throw new IllegalStateException(
-							String.format("%s тип должен быть String", nameToken)
-					);
-				}
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        return new HashSet<String>() {{
+            add(GenerateVPComponent.class.getName());
+        }};
+    }
 
-				if (!isPublicStaticFinalField(nameToken)) {
-					throw new IllegalStateException(
-							String.format("%s должен быть public static final", nameToken)
-					);
-				}
+    private boolean isPresenterComponent(TypeElement presenter) {
+        return typeUtils.isSameType(
+                typeUtils
+                        .asElement(
+                                presenter.getSuperclass()
+                        ).asType(),
+                elementUtils.getTypeElement(
+                        PresenterComponent
+                                .class
+                                .getName()
+                ).asType()
+        );
+    }
 
-				break;
-			}
-		}
+    private boolean isNestedPresenter(TypeElement presenter) {
+        return typeUtils.isSameType(
+                typeUtils
+                        .asElement(
+                                presenter.getSuperclass()
+                        ).asType(),
+                elementUtils.getTypeElement(
+                        NestedPresenter
+                                .class
+                                .getName()
+                ).asType()
+        );
+    }
 
-		return nameToken;
-	}
+    protected ApiMirror getApi(TypeElement presenterComponent) {
+        final String elementName = presenterComponent.getSimpleName().toString();
+        final String packageName = Symbol.class.cast(presenterComponent).packge().getQualifiedName().toString();
+        final String possibleApi = elementName.substring(0, elementName.length() - "Presenter".length());
 
-	private boolean isPublicStaticFinalField(VariableElement variableElement) {
-		return variableElement.getModifiers().containsAll(Arrays.asList(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL));
-	}
+        final TypeElement api = elementUtils.getTypeElement(packageName + "." + possibleApi);
 
-	@Override
-	public Set<String> getSupportedAnnotationTypes() {
-		return new LinkedHashSet<String>() {{
-			add(GenerateVPComponent.class.getCanonicalName());
-		}};
-	}
+        if (api == null) {
+            throw new IllegalStateException(
+                    String.format("Api %s не найдено", packageName + "." + possibleApi)
+            );
+        }
+
+        return new ApiMirror(api);
+    }
+
+    protected ViewMirror getView(ApiMirror apiMirror) {
+        final String possibleViewName = apiMirror
+                .getFqn()
+                .toString() + "View";
+
+        final TypeElement possibleViewImpl = elementUtils.getTypeElement(possibleViewName);
+
+        if (possibleViewImpl == null) {
+            throw new IllegalStateException(
+                    String.format("View %s не найдено", apiMirror.getPackageName() + "." + possibleViewName)
+            );
+        }
+
+        return new ViewMirror(possibleViewImpl);
+    }
 }

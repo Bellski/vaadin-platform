@@ -12,7 +12,7 @@ import javax.inject.Singleton;
  * Created by oem on 10/10/16.
  */
 @Singleton
-public class RootPresenter extends NestedPresenter<RootView> implements Presenter{
+public class RootPresenter extends NestedPresenter<Root.View> implements Root.Presenter {
 	public static final NestedSlot ROOT_SLOT = new NestedSlot();
 
 	@Inject

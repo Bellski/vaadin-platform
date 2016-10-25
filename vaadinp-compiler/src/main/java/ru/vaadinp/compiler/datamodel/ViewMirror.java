@@ -1,4 +1,4 @@
-package ru.vaadinp.compiler.processors;
+package ru.vaadinp.compiler.datamodel;
 
 import com.sun.tools.javac.code.Symbol;
 

@@ -12,10 +12,12 @@ import javax.inject.Singleton;
  * Created by oem on 10/10/16.
  */
 @Singleton
-public class BaseNotFoundPresenter extends NestedPresenter<BaseNotFound.View> implements BaseNotFound.Presenter {
+public class BaseNotFoundPlacePresenter extends NestedPresenter<BaseNotFoundPlace.View> implements BaseNotFoundPlace.Presenter {
+
+	public static final String NAME_TOKEN = "!/vaadinp-notfound";
 
 	@Inject
-	public BaseNotFoundPresenter(BaseNotFound.View view, @RevealIn(RootPresenter.class) NestedSlot nestedSlot) {
+	public BaseNotFoundPlacePresenter(BaseNotFoundPlace.View view, @RevealIn(RootPresenter.class) NestedSlot nestedSlot) {
 		super(view, nestedSlot);
 	}
 }

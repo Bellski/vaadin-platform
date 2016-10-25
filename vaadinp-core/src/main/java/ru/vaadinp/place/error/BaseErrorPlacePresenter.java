@@ -12,10 +12,12 @@ import javax.inject.Singleton;
  * Created by oem on 10/10/16.
  */
 @Singleton
-public class BaseErrorPresenter extends NestedPresenter<BaseError.View> implements BaseError.Presenter {
+public class BaseErrorPlacePresenter extends NestedPresenter<BaseErrorPlace.View> implements BaseErrorPlace.Presenter {
+
+	public static final String NAME_TOKEN = "!/vaadinp-error";
 
 	@Inject
-	public BaseErrorPresenter(BaseError.View view,  @RevealIn(RootPresenter.class) NestedSlot revealIn) {
+	public BaseErrorPlacePresenter(BaseErrorPlace.View view, @RevealIn(RootPresenter.class) NestedSlot revealIn) {
 		super(view, revealIn);
 	}
 }

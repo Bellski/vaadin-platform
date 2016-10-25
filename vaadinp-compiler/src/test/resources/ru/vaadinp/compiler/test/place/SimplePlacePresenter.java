@@ -11,7 +11,7 @@ import ru.vaadinp.vp.PresenterComponent;
 @GenerateVPComponent
 public class SimplePlacePresenter extends NestedPresenter<SimplePlace.View> implements SimplePlace.Presenter {
 
-	@GenerateNameToken
+	@GenerateNameToken(isDefault = true)
 	public static final String NAME_TOKEN = "!/simple";
 
 	public SimplePlacePresenter(SimplePlace.View view, @RevealIn(RootPresenter.class) NestedSlot inSlot) {

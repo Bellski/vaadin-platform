@@ -10,8 +10,9 @@ import ru.vaadinp.place.PlaceManager;
 import ru.vaadinp.place.PlaceRequest;
 import ru.vaadinp.place.PlaceUtils;
 import ru.vaadinp.place.error.BaseErrorPlaceVPComponent;
+import ru.vaadinp.place.error.BaseErrorPlacePresenter;
+import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
 import ru.vaadinp.place.notfound.BaseNotFoundPlaceVPComponent;
-import ru.vaadinp.slot.BaseSlotRevealBus;
 import ru.vaadinp.slot.root.RootPresenter;
 import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.uri.BaseUriFragmentSource;
@@ -41,19 +42,19 @@ public class BasePlaceManagerTest {
 
 
 	final Map<String, PlaceVPComponent<?, ?>> placeByNameToken = new HashMap<>(); {
-		placeByNameToken.put(BaseErrorPlaceVPComponent.NAME_TOKEN, baseErrorVP);
-		placeByNameToken.put(BaseNotFoundPlaceVPComponent.NAME_TOKEN, baseNotFoundPlaceVP);
+		placeByNameToken.put(BaseErrorPlacePresenter.NAME_TOKEN, baseErrorVP);
+		placeByNameToken.put(BaseNotFoundPlacePresenter.NAME_TOKEN, baseNotFoundPlaceVP);
 		placeByNameToken.put(DEFAULT_NAME_TOKEN, defaultVP);
 	}
 
 	private final UriFragmentSource uriFragmentSource = new BaseUriFragmentSource();
 
-	private final ErrorManager errorManager = new BaseErrorManager(BaseErrorPlaceVPComponent.NAME_TOKEN, BaseNotFoundPlaceVPComponent.NAME_TOKEN);
+	private final ErrorManager errorManager = new BaseErrorManager(BaseErrorPlacePresenter.NAME_TOKEN, BaseNotFoundPlacePresenter.NAME_TOKEN);
 
 	private final Set<String> nameTokenParts = new HashSet<>(); {
 		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(DefaultPresenterMock.NAME_TOKEN));
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorPlaceVPComponent.NAME_TOKEN));
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundPlaceVPComponent.NAME_TOKEN));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorPlacePresenter.NAME_TOKEN));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundPlacePresenter.NAME_TOKEN));
 	}
 
 	private final PlaceManager placeManager = new BasePlaceManager(placeByNameToken, nameTokenParts, uriFragmentSource, errorManager, DefaultPresenterMock.NAME_TOKEN);

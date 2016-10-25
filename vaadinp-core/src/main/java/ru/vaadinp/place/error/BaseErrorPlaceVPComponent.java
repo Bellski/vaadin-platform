@@ -6,7 +6,6 @@ import dagger.Module;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import ru.vaadinp.annotations.dagger.PlacesMap;
-import ru.vaadinp.slot.SlotRevealBus;
 import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.vp.PlaceVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
@@ -19,35 +18,33 @@ import javax.inject.Singleton;
  * Created by oem on 10/10/16.
  */
 @Singleton
-public class BaseErrorPlaceVPComponent extends PlaceVPComponent<BaseErrorPresenter, BaseErrorView> {
+public class BaseErrorPlaceVPComponent extends PlaceVPComponent<BaseErrorPlacePresenter, BaseErrorPlaceView> {
 
 	@Module
 	public interface Declarations  {
 
 		@Binds
-		VPComponent<? extends PresenterComponent<BaseError.View>, ?> vpComponent(BaseErrorPlaceVPComponent vpComponent);
+		VPComponent<? extends PresenterComponent<BaseErrorPlace.View>, ?> vpComponent(BaseErrorPlaceVPComponent vpComponent);
 
 		@Binds
-		BaseError.Presenter presenter(BaseErrorPresenter presenter);
+		BaseErrorPlace.Presenter presenter(BaseErrorPlacePresenter presenter);
 
 		@Binds
-		BaseError.View view(BaseErrorView view);
+		BaseErrorPlace.View view(BaseErrorPlaceView view);
 
 		@Binds
 		@IntoMap
 		@PlacesMap
-		@StringKey(NAME_TOKEN)
+		@StringKey(BaseErrorPlacePresenter.NAME_TOKEN)
 		PlaceVPComponent<?, ?> place(BaseErrorPlaceVPComponent vpComponent);
 	}
 
-	public static final String NAME_TOKEN = "!/vaadinp-error";
-
 
 	@Inject
-	public BaseErrorPlaceVPComponent(Lazy<BaseErrorPresenter> lazyPresenterComponent,
-									 Lazy<BaseErrorView> lazyView,
+	public BaseErrorPlaceVPComponent(Lazy<BaseErrorPlacePresenter> lazyPresenterComponent,
+									 Lazy<BaseErrorPlaceView> lazyView,
 									 RootVPComponent parent) {
 
-		super(NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
+		super(BaseErrorPlacePresenter.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
 	}
 }

@@ -2,7 +2,7 @@ package ru.vaadinp.error;
 
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorHandler;
-import ru.vaadinp.annotations.dagger.ErroPlaceNameToken;
+import ru.vaadinp.annotations.dagger.ErrorPlaceNameToken;
 import ru.vaadinp.annotations.dagger.NotFoundPlaceNameToken;
 import ru.vaadinp.place.PlaceManager;
 import ru.vaadinp.place.PlaceRequest;
@@ -26,7 +26,7 @@ public class BaseErrorManager implements ErrorManager, ErrorHandler {
 	private PlaceManager placeManager;
 
 	@Inject
-	public BaseErrorManager(@ErroPlaceNameToken String errorTokenName, @NotFoundPlaceNameToken String notFoundTokenName) {
+	public BaseErrorManager(@ErrorPlaceNameToken String errorTokenName, @NotFoundPlaceNameToken String notFoundTokenName) {
 		this.errorTokenPlace = new PlaceRequest
 			.Builder()
 			.nameToken(errorTokenName)

@@ -6,8 +6,11 @@ import ru.vaadinp.annotations.GenerateNameToken;
 import ru.vaadinp.annotations.GenerateVPComponent;
 import ru.vaadinp.annotations.dagger.RevealIn;
 import ru.vaadinp.compiler.JavaSourceGenerator;
+import ru.vaadinp.compiler.datamodel.*;
+import ru.vaadinp.compiler.datamodel.vaadinpmodule.GenerateVaadinPlatformModuleModel;
 import ru.vaadinp.slot.NestedSlot;
 import ru.vaadinp.slot.root.RootPresenter;
+import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.vp.NestedPresenter;
 import ru.vaadinp.vp.PresenterComponent;
 
@@ -31,8 +34,8 @@ public class VaadinPlatformProcessor extends AbstractProcessor {
 	private Elements elementUtils;
 	private Filer filer;
 
-	private final List<AnnotatedPresenterComponent> presenterComponents = new ArrayList<>();
-	private final Set<AnnotatedNestedPresenter> sortedNestedPresenters = new LinkedHashSet<>();
+	private final List<GenerateVPComponentModel> vPComponentModels = new ArrayList<>();
+	private final Set<GenerateNestedVPComponentModel> sortedNestedVPComponents = new LinkedHashSet<>();
 
 	private boolean processed = false;
 
@@ -48,7 +51,14 @@ public class VaadinPlatformProcessor extends AbstractProcessor {
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		if (!processed) {
-			final List<AnnotatedNestedPresenter> nestedPresenters = new ArrayList<>();
+			final List<GenerateNestedVPComponentModel> nestedVPComponents = new ArrayList<>();
+
+			GenerateNestedVPComponentModel rootVPComponent = null;
+			GenerateNestedVPComponentModel appRootVPComponent = null;
+
+			GenerateNestedVPComponentModel defaultPlace = null;
+			GenerateNestedVPComponentModel errorPlace = null;
+			GenerateNestedVPComponentModel notFoundPlace = null;
 
 			for (Element element : roundEnv.getElementsAnnotatedWith(GenerateVPComponent.class)) {
 				final TypeElement presenterElement = (TypeElement) element;
@@ -59,46 +69,60 @@ public class VaadinPlatformProcessor extends AbstractProcessor {
 				final ViewMirror viewMirror = getView(apiMirror);
 
 				if (isPresenterComponent(presenterElement)) {
-					AnnotatedPresenterComponent annotatedPresenterComponent = new AnnotatedPresenterComponent(presenterElement, apiMirror, viewMirror);
 
-					presenterComponents.add(annotatedPresenterComponent);
+					vPComponentModels.add(
+							new GenerateVPComponentModel(new AnnotatedPresenterComponent(presenterElement, apiMirror, viewMirror))
+					);
+
 				} else if (isNestedPresenter(presenterElement)) {
 					final AnnotatedNestedPresenter annotatedNestedPresenter = new AnnotatedNestedPresenter(presenterElement, apiMirror, viewMirror);
 					annotatedNestedPresenter.setNestedSlotMirror(getNestedSlot(presenterElement));
 					annotatedNestedPresenter.setNameToken(getNameToken(presenterElement));
 
-					nestedPresenters.add(annotatedNestedPresenter);
+					final GenerateNestedVPComponentModel parent = new GenerateNestedVPComponentModel(getRevealIn(presenterElement));
+					final GenerateNestedVPComponentModel nestedVPComponent = new GenerateNestedVPComponentModel(annotatedNestedPresenter);
+					nestedVPComponent.setParent(parent);
 
-					final AnnotatedNestedPresenter parent = getParent(presenterElement);
-					annotatedNestedPresenter.setParent(parent);
+					if (parent.getFqn().equals(RootVPComponent.class.getName())) {
+						rootVPComponent = parent;
+						appRootVPComponent = nestedVPComponent;
 
-					if (parent != null && parent.getFqn().equals(RootPresenter.class.getName())) {
-						sortedNestedPresenters.add(annotatedNestedPresenter);
+						sortedNestedVPComponents.add(parent);
 					}
+
+					nestedVPComponents.add(nestedVPComponent);
 				}
 			}
 
-			final Iterator<AnnotatedNestedPresenter> nestedPresenterIterator = nestedPresenters.iterator();
+			Iterator<GenerateNestedVPComponentModel> nestedPresenterIterator = nestedVPComponents.iterator();
 
-			while (nestedPresenters.size() > 0) {
+			while (nestedVPComponents.size() > 0) {
+
+				if (!nestedPresenterIterator.hasNext()) {
+					nestedPresenterIterator = nestedVPComponents.iterator();
+				}
+
 				while (nestedPresenterIterator.hasNext()) {
 
-					final AnnotatedNestedPresenter presenter = nestedPresenterIterator.next();
+					final GenerateNestedVPComponentModel vpComponent = nestedPresenterIterator.next();
 
-					if (sortedNestedPresenters.contains(presenter.getParent())) {
+					if (sortedNestedVPComponents.contains(vpComponent.getParent())) {
 						nestedPresenterIterator.remove();
-						sortedNestedPresenters.add(presenter);
+						sortedNestedVPComponents.add(vpComponent);
 					}
 				}
 			}
 
-			for (AnnotatedPresenterComponent presenterComponent : presenterComponents) {
-				final  GenerateVPComponentModel generateVPComponentModel = new GenerateVPComponentModel(presenterComponent);
+			if (rootVPComponent != null) {
+				sortedNestedVPComponents.remove(rootVPComponent);
+			}
+
+			for (GenerateVPComponentModel vpComponent : vPComponentModels) {
 				try {
-					final JavaFileObject simpleVPComponentSource = filer.createSourceFile(generateVPComponentModel.getFqn());
+					final JavaFileObject simpleVPComponentSource = filer.createSourceFile(vpComponent.getFqn());
 
 					try (Writer writer = simpleVPComponentSource.openWriter()) {
-						writer.write(JavaSourceGenerator.generateJavaSource(generateVPComponentModel, "SimpleVPComponent.ftl"));
+						writer.write(JavaSourceGenerator.generateJavaSource(vpComponent, "SimpleVPComponent.ftl"));
 					} catch (TemplateException e) {
 						e.printStackTrace();
 					}
@@ -106,6 +130,26 @@ public class VaadinPlatformProcessor extends AbstractProcessor {
 					e.printStackTrace();
 				}
 			}
+
+			for (GenerateNestedVPComponentModel vpComponent : sortedNestedVPComponents) {
+				try {
+					final JavaFileObject simpleVPComponentSource = filer.createSourceFile(vpComponent.getFqn());
+
+					try (Writer writer = simpleVPComponentSource.openWriter()) {
+						if (vpComponent.getPresenterComponent().getNameToken() == null) {
+							writer.write(JavaSourceGenerator.generateJavaSource(vpComponent, "NestedVPComponent.ftl"));
+						} else {
+							writer.write(JavaSourceGenerator.generateJavaSource(vpComponent, "PlaceVPComponent.ftl"));
+						}
+					} catch (TemplateException e) {
+						e.printStackTrace();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+
 
 			processed = true;
 		}
@@ -117,6 +161,7 @@ public class VaadinPlatformProcessor extends AbstractProcessor {
 	public Set<String> getSupportedAnnotationTypes() {
 		return new LinkedHashSet<String>() {{
 			add(GenerateVPComponent.class.getCanonicalName());
+			add(RevealIn.class.getCanonicalName());
 		}};
 	}
 
@@ -246,7 +291,7 @@ public class VaadinPlatformProcessor extends AbstractProcessor {
 		return nameToken;
 	}
 
-	private AnnotatedNestedPresenter getParent(TypeElement presenterElement) {
+	private AnnotatedNestedPresenter getRevealIn(TypeElement presenterElement) {
 		AnnotatedNestedPresenter parent = null;
 
 		for (Element element : elementUtils.getAllMembers(presenterElement)) {

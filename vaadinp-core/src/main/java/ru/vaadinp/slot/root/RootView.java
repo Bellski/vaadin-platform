@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * Created by oem on 10/10/16.
  */
 @Singleton
-public class RootView extends ViewImpl<RootPresenter> implements View {
+public class RootView extends ViewImpl<Root.Presenter> implements Root.View {
 	private UI ui;
 
 	@Inject

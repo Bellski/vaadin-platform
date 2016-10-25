@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler.processors.GenerateVPComponentModel" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.GenerateVPComponentModel" -->
 package ${packageName};
 
 import dagger.Lazy;

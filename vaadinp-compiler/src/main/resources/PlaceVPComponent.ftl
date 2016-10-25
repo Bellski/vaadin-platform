@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.AnnotatedGenerateVPComponentClass" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.GenerateNestedVPComponentModel" -->
 package ${packageName};
 
 import dagger.Binds;
@@ -7,7 +7,6 @@ import dagger.Module;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import ru.vaadinp.annotations.dagger.PlacesMap;
-import ru.vaadinp.slot.SlotRevealBus;
 import ru.vaadinp.vp.PlaceVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
 import ru.vaadinp.vp.VPComponent;
@@ -15,43 +14,43 @@ import ru.vaadinp.vp.VPComponent;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import ${parentQualifiedName};
+import ${parent.fqn};
 
 @Singleton
-public class ${componentName} extends PlaceVPComponent<${presenterImplName}, ${viewImplName}> {
+public class ${name} extends PlaceVPComponent<${presenterComponent.name}, ${presenterComponent.viewMirror.name}> {
 
     @Module
     public interface Declarations {
         @Binds
-        VPComponent<? extends PresenterComponent<${viewApiName}>, ?> vpComponent(${componentName} vpComponent);
+        VPComponent<? extends PresenterComponent<${presenterComponent.apiMirror.viewApiName}>, ?> vpComponent(${name} vpComponent);
 
         @Binds
-        ${viewApiName} view(${viewImplName} view);
+        ${presenterComponent.apiMirror.viewApiName} view(${presenterComponent.viewMirror.name} view);
 
         @Binds
-        ${presenterApiName} presenter(${presenterImplName} presenter);
+        ${presenterComponent.apiMirror.presenterApiName} presenter(${presenterComponent.name} presenter);
 
-        <#if hasSlot()>
+        <#if presenterComponent.nestedSlotMirror??>
         @Provides
         @Singleton
-        @RevealIn(${presenterImplName}.class)
+        @RevealIn(${presenterComponent.name}.class)
         static NestedSlot nestedSlot() {
-            return ${presenterImplName}.${slotName};
+            return ${presenterComponent.name}.${presenterComponent.nestedSlotMirror.name};
         }
         </#if>
 
         @IntoMap
         @PlacesMap
         @Binds
-        @StringKey(${presenterImplName}.NAME_TOKEN) PlaceVPComponent<?, ?> place(${componentName} vpComponent);
+        @StringKey(${presenterComponent.name}.NAME_TOKEN) PlaceVPComponent<?, ?> place(${name} vpComponent);
 
     }
 
     @Inject
-    public ${componentName}(Lazy<${presenterImplName}> lazyPresenterComponent,
-                            Lazy<${viewImplName}> lazyView,
-                            ${parentName} parent) {
+    public ${name}(Lazy<${presenterComponent.name}> lazyPresenterComponent,
+                            Lazy<${presenterComponent.viewMirror.name}> lazyView,
+                            ${parent.name} parent) {
 
-        super(${presenterImplName}.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
+        super(${presenterComponent.name}.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
     }
 }

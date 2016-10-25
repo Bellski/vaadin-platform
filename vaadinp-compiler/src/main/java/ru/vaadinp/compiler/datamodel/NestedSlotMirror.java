@@ -1,4 +1,4 @@
-package ru.vaadinp.compiler.processors;
+package ru.vaadinp.compiler.datamodel;
 
 import javax.lang.model.element.VariableElement;
 

@@ -11,5 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)
 public @interface GenerateNameToken {
-	String value() default "";
+	boolean isDefault() default false;
+	boolean isError() default false;
+	boolean isNotFound() default false;
 }

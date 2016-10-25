@@ -2,14 +2,13 @@ package ru.vaadinp.test;
 
 import dagger.Lazy;
 import dagger.internal.DoubleCheck;
+import ru.vaadinp.place.error.BaseErrorPlacePresenter;
 import ru.vaadinp.place.error.BaseErrorPlaceVPComponent;
-import ru.vaadinp.place.error.BaseErrorPresenter;
-import ru.vaadinp.place.error.BaseErrorView;
+import ru.vaadinp.place.error.BaseErrorPlaceView;
+import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
 import ru.vaadinp.place.notfound.BaseNotFoundPlaceVPComponent;
-import ru.vaadinp.place.notfound.BaseNotFoundPresenter;
-import ru.vaadinp.place.notfound.BaseNotFoundView;
+import ru.vaadinp.place.notfound.BaseNotFoundPlaceView;
 import ru.vaadinp.slot.NestedSlot;
-import ru.vaadinp.slot.SlotRevealBus;
 import ru.vaadinp.slot.root.RootPresenter;
 import ru.vaadinp.slot.root.RootVPComponent;
 import ru.vaadinp.slot.root.RootView;
@@ -37,31 +36,31 @@ public class MockUtils {
 	}
 
 	public static BaseNotFoundPlaceVPComponent mockBaseNotFoundVP(RootVPComponent rootVPComponent) {
-		final Lazy<BaseNotFoundView> lazyView = DoubleCheck.lazy(BaseNotFoundView::new);
+		final Lazy<BaseNotFoundPlaceView> lazyView = DoubleCheck.lazy(BaseNotFoundPlaceView::new);
 
-		return new BaseNotFoundPlaceVPComponent(DoubleCheck.lazy(() -> new BaseNotFoundPresenter(lazyView.get(), RootPresenter.ROOT_SLOT)), lazyView, rootVPComponent) {
+		return new BaseNotFoundPlaceVPComponent(DoubleCheck.lazy(() -> new BaseNotFoundPlacePresenter(lazyView.get(), RootPresenter.ROOT_SLOT)), lazyView, rootVPComponent) {
 			@Override
-			public BaseNotFoundPresenter getPresenter() {
-				BaseNotFoundPresenter baseNotFoundPresenter = super.getPresenter();
+			public BaseNotFoundPlacePresenter getPresenter() {
+				BaseNotFoundPlacePresenter baseNotFoundPlacePresenter = super.getPresenter();
 
-				baseNotFoundPresenter.setVpComponent(this);
+				baseNotFoundPlacePresenter.setVpComponent(this);
 
-				return baseNotFoundPresenter;
+				return baseNotFoundPlacePresenter;
 			}
 		};
 	}
 
 	public static BaseErrorPlaceVPComponent mockBaseBaseErrorPlaceVP(RootVPComponent rootVPComponent) {
-		final Lazy<BaseErrorView> lazyView = DoubleCheck.lazy(BaseErrorView::new);
+		final Lazy<BaseErrorPlaceView> lazyView = DoubleCheck.lazy(BaseErrorPlaceView::new);
 
-		return new BaseErrorPlaceVPComponent(DoubleCheck.lazy(() -> new BaseErrorPresenter(lazyView.get(), RootPresenter.ROOT_SLOT)), lazyView, rootVPComponent) {
+		return new BaseErrorPlaceVPComponent(DoubleCheck.lazy(() -> new BaseErrorPlacePresenter(lazyView.get(), RootPresenter.ROOT_SLOT)), lazyView, rootVPComponent) {
 			@Override
-			public BaseErrorPresenter getPresenter() {
-				BaseErrorPresenter baseErrorPresenter = super.getPresenter();
+			public BaseErrorPlacePresenter getPresenter() {
+				BaseErrorPlacePresenter baseErrorPlacePresenter = super.getPresenter();
 
-				baseErrorPresenter.setVpComponent(this);
+				baseErrorPlacePresenter.setVpComponent(this);
 
-				return baseErrorPresenter;
+				return baseErrorPlacePresenter;
 			}
 		};
 	}

@@ -3,15 +3,16 @@ package ru.vaadinp.compiler.test.nestedWithNestedSlot;
 import dagger.Binds;
 import dagger.Lazy;
 import dagger.Module;
-import dagger.Provides;
-import ru.vaadinp.annotations.dagger.RevealIn;
-import ru.vaadinp.slot.NestedSlot;
 import ru.vaadinp.vp.NestedVPComponent;
 import ru.vaadinp.vp.PresenterComponent;
 import ru.vaadinp.vp.VPComponent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import dagger.Provides;
+import ru.vaadinp.annotations.dagger.RevealIn;
+import ru.vaadinp.slot.NestedSlot;
 
 import ru.vaadinp.slot.root.RootVPComponent;
 

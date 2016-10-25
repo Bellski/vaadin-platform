@@ -23,22 +23,28 @@ import java.util.Map;
 @Singleton
 public class RootVPComponent extends NestedVPComponent<RootPresenter, RootView> {
 
-	@Module
-	public interface Declarations  {
-		@Binds
-		VPComponent<? extends PresenterComponent<RootView>, ?> vpComponent(RootVPComponent vpComponent);
+    @Module
+    public interface Declarations {
+        @Binds
+        VPComponent<? extends PresenterComponent<Root.View>, ?> vpComponent(RootVPComponent vpComponent);
 
-		@Provides
-		@Singleton
-		@RevealIn(RootPresenter.class)
-		static NestedSlot nestedSlot() {
-			return RootPresenter.ROOT_SLOT;
-		}
-	}
+        @Binds
+        Root.View view(RootView view);
 
-	@Inject
-	public RootVPComponent(Lazy<RootPresenter> lazyPresenterComponent, Lazy<RootView> lazyView) {
-		super(lazyPresenterComponent, lazyView, null);
-	}
+        @Binds
+        Root.Presenter presenter(RootPresenter presenter);
+
+        @Provides
+        @Singleton
+        @RevealIn(RootPresenter.class)
+        static NestedSlot nestedSlot() {
+            return RootPresenter.ROOT_SLOT;
+        }
+    }
+
+    @Inject
+    public RootVPComponent(Lazy<RootPresenter> lazyPresenterComponent, Lazy<RootView> lazyView) {
+        super(lazyPresenterComponent, lazyView, null);
+    }
 
 }
