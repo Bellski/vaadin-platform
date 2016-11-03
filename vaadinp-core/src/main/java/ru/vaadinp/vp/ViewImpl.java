@@ -9,6 +9,7 @@ import ru.vaadinp.slot.IsSingleSlot;
 import ru.vaadinp.slot.IsSlot;
 import ru.vaadinp.slot.OrderedSlot;
 import ru.vaadinp.slot.Slot;
+import ru.vaadinp.vp.api.Presenter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * Created by oem on 10/7/16.
  */
-public class ViewImpl<PRESENTER extends Presenter> implements View, HasPresenter {
+public class ViewImpl<PRESENTER extends Presenter> implements View {
 	private final Map<Object, SingleComponentContainer> oneComponentSlots = new HashMap<>();
 	private final Map<Object, ComponentContainer> componentContainerSlots = new HashMap<>();
 	private final Map<OrderedSlot<?>, List<Comparable<Comparable<?>>>> orderedSlots
@@ -108,6 +109,10 @@ public class ViewImpl<PRESENTER extends Presenter> implements View, HasPresenter
 		} else {
 			throw new IllegalArgumentException("Containers must implement either HasOneWidget or HasWidgets.");
 		}
+	}
+
+	protected PRESENTER getPresenter() {
+		return presenter;
 	}
 
 	@Override

@@ -6,8 +6,8 @@ import ru.vaadinp.annotations.dagger.PlacesMap;
 import ru.vaadinp.error.ErrorManager;
 import ru.vaadinp.uri.UriFragmentSource;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
-import ru.vaadinp.vp.NestedPresenter;
-import ru.vaadinp.vp.PlaceVPComponent;
+import ru.vaadinp.vp.BaseNestedPresenter;
+import ru.vaadinp.vp.api.PlaceMVP;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,7 +22,7 @@ import java.util.*;
  */
 @Singleton
 public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler {
-	private final Map<String, PlaceVPComponent<?, ?>> placeByNameToken;
+	private final Map<String, PlaceMVP<?>> placeByNameToken;
 	private final UriFragmentSource uriFragmentSource;
 	private final ErrorManager errorManager;
 	private final Set<String> nameTokenParts;
@@ -32,9 +32,10 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 	private final PlaceRequest defaultPlaceRequest;
 
 	private String currentHistoryToken = "";
+	private PlaceMVP<?> currentPlace;
 
 	@Inject
-	public BasePlaceManager(@PlacesMap Map<String, PlaceVPComponent<?, ?>> placeByNameToken,
+	public BasePlaceManager(@PlacesMap Map<String, PlaceMVP<?>> placeByNameToken,
 							@NameTokenParts Set<String> nameTokenParts,
 							UriFragmentSource uriFragmentSource,
 							ErrorManager errorManager,
@@ -66,13 +67,14 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 		if (uriFragmentIsEmpty(uriFragment)) {
 			revealDefaultPlace();
 		} else {
-			final PlaceVPComponent<?, ?> place = placeByNameToken.get(toPlacePattern(uriFragment));
+			final String encodedUriFragment = toPlacePattern(uriFragment);
+			final PlaceMVP<?> mvp = placeByNameToken.get(toPlacePattern(encodedUriFragment));
 
-			if (place == null) {
+			if (mvp == null) {
 				errorManager.placeNotFound(uriFragment);
 			} else {
-				placeHierarchy = toPlaceRequestHierarchy(uriFragment, place);
-				doRevealPlace(getCurrentPlaceRequest(), place, true);
+				placeHierarchy = toPlaceRequestHierarchy(uriFragment, mvp.getPlace().getNameToken(encodedUriFragment));
+				doRevealPlace(getCurrentPlaceRequest(), mvp, true);
 			}
 		}
 	}
@@ -81,14 +83,14 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 		return uriFragment == null || uriFragment.isEmpty() || uriFragment.equals("!/");
 	}
 
-	private List<PlaceRequest> toPlaceRequestHierarchy(String historyToken, PlaceVPComponent<?, ?> place) {
+	private List<PlaceRequest> toPlaceRequestHierarchy(String historyToken, NameToken nameToken) {
 		List<PlaceRequest> result = new ArrayList<>(); //TODO: надо будет потом упразднить.
-		result.add(toPlaceRequest(historyToken, place));
+		result.add(toPlaceRequest(historyToken, nameToken));
 
 		return result;
 	}
 
-	private PlaceRequest toPlaceRequest(String uriFragment, PlaceVPComponent<?, ?> place) {
+	private PlaceRequest toPlaceRequest(String uriFragment, NameToken nameToken) {
 		int split = uriFragment.indexOf('?');
 
 		String query = (split != -1) ? uriFragment.substring(split + 1) : ""; //TODO: добавить поддержку параметров через вопросик
@@ -97,31 +99,34 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 
 		Map<String, String> params = null;
 
-		if (place.hasParameters()) {
+		if (nameToken.hasParameters()) {
 			params = new HashMap<>(3);
 
-			for (int i = 0; i < place.getParameterIndexes().length; i++) {
-				params.put(place.getParameterNames()[i], placeParts[place.getParameterIndexes()[i]]);
+			for (int i = 0; i < nameToken.getParameterIndexes().length; i++) {
+				params.put(nameToken.getParameterNames()[i], placeParts[nameToken.getParameterIndexes()[i]]);
 			}
 		}
 
 		return new PlaceRequest
 			.Builder()
-			.nameToken(place.toString())
+			.nameToken(uriFragment)
 			.with(params)
 			.build();
 	}
 
-	protected void doRevealPlace(PlaceRequest request, PlaceVPComponent<?, ?> place, boolean updateBrowser) throws UnsupportedEncodingException {
-		if (place.isSecured()) {
-			place
+	protected void doRevealPlace(PlaceRequest request, PlaceMVP<?> mvp, boolean updateBrowser) throws UnsupportedEncodingException {
+		this.currentPlace = mvp;
+
+		if (mvp.getPlace().isSecured()) {
+			mvp
+				.getPlace()
 				.getLazyGatekeeper()
 				.get()
-				.canReveal(place);
+				.canReveal(mvp);
 		} else {
 			final PlaceRequest originalRequest = getCurrentPlaceRequest();
 
-			final NestedPresenter<?> presenter = place.getPresenter();
+			final BaseNestedPresenter<?> presenter = mvp.getPresenter();
 
 			presenter.prepareFromRequest(request);
 
@@ -170,7 +175,7 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 		return toPlaceToken(placeHierarchy.get(0));
 	}
 
-	private String toPlaceToken(PlaceRequest placeRequest) throws UnsupportedEncodingException {
+	private  String toPlaceToken(PlaceRequest placeRequest) throws UnsupportedEncodingException {
 		String placeToken = placeRequest.getNameToken();
 		StringBuilder queryStringBuilder = new StringBuilder();
 		String querySeparator = "";
@@ -210,6 +215,11 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 	}
 
 	@Override
+	public PlaceMVP<?> getCurrentPlace() {
+		return currentPlace;
+	}
+
+	@Override
 	public void revealPlace(PlaceRequest request) {
 		revealPlace(request, false);
 	}
@@ -219,13 +229,13 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 		placeHierarchy.clear();
 		placeHierarchy.add(request);
 
-		final PlaceVPComponent<?, ?> place = placeByNameToken.get(toPlacePattern(request.getNameToken()));
+		final PlaceMVP<? extends BaseNestedPresenter<?>> mvp = placeByNameToken.get(toPlacePattern(request.getNameToken()));
 
-		if (place == null) {
+		if (mvp == null) {
 			errorManager.placeNotFound(request.getNameToken());
 		} else {
 			try {
-				doRevealPlace(request, place, updateBrowserUrl);
+				doRevealPlace(request, mvp, updateBrowserUrl);
 			} catch (UnsupportedEncodingException e) {
 				errorManager.exception(request, e);
 			}
@@ -265,10 +275,4 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 		return defaultPlaceRequest;
 	}
 
-	@Override
-	public void clean() {
-		uriFragmentSource.clean();
-		placeByNameToken.clear();
-		placeHierarchy.clear();
-	}
 }

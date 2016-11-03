@@ -1,6 +1,6 @@
 package ru.vaadinp.annotations.dagger;
 
-import ru.vaadinp.vp.NestedPresenter;
+import ru.vaadinp.vp.BaseNestedPresenter;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;
@@ -15,5 +15,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 public @interface RevealIn {
-	Class<? extends NestedPresenter<?>> value();
+	Class<? extends BaseNestedPresenter<?>> value();
 }

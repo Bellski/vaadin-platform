@@ -16,12 +16,7 @@
 package ru.vaadinp.slot;
 
 import ru.vaadinp.vp.PresenterComponent;
+import ru.vaadinp.vp.api.Presenter;
 
-/**
- * A slot for an ordered getPresenter.
- * The getPresenter placed in this slot must implement comparable and will
- * be automatically placed in order in the getView.
- * @param <T> - The type of getPresenter, must extend comparable.
- */
-public class OrderedSlot<T extends PresenterComponent<?> & Comparable<T>> extends MultiSlot<T> {
+public class OrderedSlot<P extends PresenterComponent<?> & Presenter & Comparable<P>> extends MultiSlot<P> {
 }

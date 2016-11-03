@@ -3,7 +3,7 @@ package ru.vaadinp.compiler.processors;
 import com.sun.tools.javac.code.Symbol;
 import ru.vaadinp.compiler.datamodel.AnnotatedPresenterComponent;
 import ru.vaadinp.compiler.datamodel.ApiMirror;
-import ru.vaadinp.compiler.datamodel.GenerateVPComponentModel;
+import ru.vaadinp.compiler.datamodel.GenerateMVPModel;
 import ru.vaadinp.compiler.datamodel.ViewMirror;
 
 import javax.lang.model.element.Element;
@@ -15,8 +15,8 @@ import javax.lang.model.util.Types;
 /**
  * Created by Aleksandr on 23.10.2016.
  */
-public class VPComponentScanner extends ElementScanner8<GenerateVPComponentModel, Void> {;
-    private GenerateVPComponentModel generateVPComponentModel;
+public class VPComponentScanner extends ElementScanner8<GenerateMVPModel, Void> {;
+    private GenerateMVPModel generateMVPModel;
 
     protected final Types typeUtils;
     protected Elements elementUtils;
@@ -28,17 +28,17 @@ public class VPComponentScanner extends ElementScanner8<GenerateVPComponentModel
 
 
     @Override
-    public GenerateVPComponentModel scan(Element e, Void aVoid) {
-        if (generateVPComponentModel == null) {
+    public GenerateMVPModel scan(Element e, Void aVoid) throws IllegalStateException {
+        if (generateMVPModel == null) {
 
             final ApiMirror api = getApi((TypeElement) e);
 
-            generateVPComponentModel = new GenerateVPComponentModel(new AnnotatedPresenterComponent((TypeElement) e, api, getView(api)));
+            generateMVPModel = new GenerateMVPModel(new AnnotatedPresenterComponent((TypeElement) e, api, getView(api)));
         }
 
         e.accept(this, aVoid);
 
-        return generateVPComponentModel;
+        return generateMVPModel;
     }
 
     protected ApiMirror getApi(TypeElement presenterComponent) {

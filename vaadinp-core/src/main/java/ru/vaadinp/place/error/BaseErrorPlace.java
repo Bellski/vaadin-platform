@@ -8,7 +8,7 @@ public interface BaseErrorPlace {
 
 	}
 
-	interface Presenter extends ru.vaadinp.vp.Presenter {
+	interface Presenter extends ru.vaadinp.vp.api.Presenter {
 
 	}
 }

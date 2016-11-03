@@ -2,13 +2,13 @@ package ru.vaadinp.compiler.processors;
 
 import com.sun.tools.javac.code.Symbol;
 import freemarker.template.TemplateException;
-import ru.vaadinp.annotations.GenerateVPComponent;
+import ru.vaadinp.annotations.GenerateMVP;
 import ru.vaadinp.compiler.JavaSourceGenerator;
 import ru.vaadinp.compiler.datamodel.*;
 import ru.vaadinp.compiler.datamodel.vaadinpmodule.GenerateVaadinPlatformModuleModel;
 import ru.vaadinp.place.error.BaseErrorPlacePresenter;
 import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
-import ru.vaadinp.vp.NestedPresenter;
+import ru.vaadinp.vp.BaseNestedPresenter;
 import ru.vaadinp.vp.PresenterComponent;
 
 import javax.annotation.processing.*;
@@ -16,6 +16,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
@@ -30,8 +31,8 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
     private Elements elementUtils;
     private Filer filer;
 
-    private final Set<GenerateVPComponentModel> vpComponents = new LinkedHashSet<>();
-    private final Map<TypeElement, GenerateNestedVPComponentModel> vpComponentByPresenterTypeElement = new HashMap<>();
+    private final Set<GenerateMVPModel> vpComponents = new LinkedHashSet<>();
+    private final Map<TypeElement, GenerateNestedMVPModel> vpComponentByPresenterTypeElement = new HashMap<>();
 
 
     @Override
@@ -48,62 +49,68 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (annotations.size() > 0) {
 
-            GenerateNestedVPComponentModel rootComponent = null;
+            GenerateNestedMVPModel rootComponent = null;
 
-            GenerateNestedVPComponentModel defaultComponent = null;
-            GenerateNestedVPComponentModel notFoundComponent = null;
-            GenerateNestedVPComponentModel errorComponent = null;
+            GenerateNestedMVPModel defaultComponent = null;
+            GenerateNestedMVPModel notFoundComponent = null;
+            GenerateNestedMVPModel errorComponent = null;
 
-            for (Element element : roundEnv.getElementsAnnotatedWith(GenerateVPComponent.class)) {
+            for (Element element : roundEnv.getElementsAnnotatedWith(GenerateMVP.class)) {
 
                 if(isPresenterComponent((TypeElement) element)) {
-                    final GenerateVPComponentModel vpComponent = new VPComponentScanner(elementUtils, typeUtils).scan(element);
-                    vpComponents.add(vpComponent);
+                    GenerateMVPModel vpComponent = null;
+
+                    try {
+                        vpComponent = new VPComponentScanner(elementUtils, typeUtils).scan(element);
+                        vpComponents.add(vpComponent);
+                    } catch (IllegalStateException e) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+                    }
 
                     try (Writer writer = filer.createSourceFile(vpComponent.getFqn()).openWriter()) {
                         writer.write(JavaSourceGenerator.generateJavaSource(vpComponent, "SimpleVPComponent.ftl"));
                     } catch (TemplateException | IOException e) {
-                        e.printStackTrace();
+                        messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
                     }
 
                 } else if (isNestedPresenter((TypeElement) element)) {
-                    final GenerateNestedVPComponentModel nestedVPComponent = (GenerateNestedVPComponentModel) new NestedVPComponentScanner(elementUtils, typeUtils).scan(element);
-                    vpComponentByPresenterTypeElement.put(nestedVPComponent.getPresenterComponent().getPresenterElement(), nestedVPComponent);
+                    GenerateNestedMVPModel nestedVPComponent = null;
+
+                    try {
+                        nestedVPComponent = (GenerateNestedMVPModel) new NestedVPComponentScanner(elementUtils, typeUtils).scan(element);
+                        vpComponentByPresenterTypeElement.put(nestedVPComponent.getPresenterComponent().getPresenterElement(), nestedVPComponent);
+                    } catch (IllegalStateException e) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+                    }
 
                     if (nestedVPComponent.isRoot()) {
                         rootComponent = nestedVPComponent;
                     }
 
-                    if (nestedVPComponent.getPresenterComponent().isDefault()) {
+                    if (nestedVPComponent.getPresenterComponent().getDefaultToken() != null) {
                         defaultComponent = nestedVPComponent;
                     }
 
-                    if (nestedVPComponent.getPresenterComponent().isNotFound()) {
+                    if (nestedVPComponent.getPresenterComponent().getNotFoundToken() != null) {
                         notFoundComponent = nestedVPComponent;
                     }
 
-                    if (nestedVPComponent.getPresenterComponent().isError()) {
+                    if (nestedVPComponent.getPresenterComponent().getErrorToken() != null) {
                         errorComponent = nestedVPComponent;
                     }
                 }
 
             }
 
-            for (GenerateNestedVPComponentModel generateNestedVPComponentModel : vpComponentByPresenterTypeElement.values()) {
-                if (generateNestedVPComponentModel.getParent() == null) {
-                    generateNestedVPComponentModel.setParent(vpComponentByPresenterTypeElement.get(generateNestedVPComponentModel.getParentPresenterElement()));
+            for (GenerateNestedMVPModel generateNestedMVPModel : vpComponentByPresenterTypeElement.values()) {
+                if (generateNestedMVPModel.getParent() == null) {
+                    generateNestedMVPModel.setParent(vpComponentByPresenterTypeElement.get(generateNestedMVPModel.getParentPresenterElement()));
                 }
 
-                try (Writer writer = filer.createSourceFile(generateNestedVPComponentModel.getFqn()).openWriter()) {
-
-                    if (generateNestedVPComponentModel.getPresenterComponent().getNameToken() == null) {
-                        writer.write(JavaSourceGenerator.generateJavaSource(generateNestedVPComponentModel, "NestedVPComponent.ftl"));
-                    } else {
-                        writer.write(JavaSourceGenerator.generateJavaSource(generateNestedVPComponentModel, "PlaceVPComponent.ftl"));
-                    }
-
+                try (Writer writer = filer.createSourceFile(generateNestedMVPModel.getFqn()).openWriter()) {
+                    writer.write(JavaSourceGenerator.generateJavaSource(generateNestedMVPModel, "NestedVPComponent.ftl"));
                 } catch (TemplateException | IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -120,7 +127,7 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
 
                     final ApiMirror api = getApi(notFoundPlaceTypeElement);
 
-                    notFoundComponent = new GenerateNestedVPComponentModel(new AnnotatedNestedPresenter(notFoundPlaceTypeElement, api, getView(api)));
+                    notFoundComponent = new GenerateNestedMVPModel(new AnnotatedNestedPresenter(notFoundPlaceTypeElement, api, getView(api)));
                 }
 
                 generateVaadinPlatformModuleModel.setNotFoundPlace(notFoundComponent);
@@ -136,7 +143,7 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
 
                     final ApiMirror api = getApi(notFoundPlaceTypeElement);
 
-                    errorComponent = new GenerateNestedVPComponentModel(new AnnotatedNestedPresenter(notFoundPlaceTypeElement, api, getView(api)));
+                    errorComponent = new GenerateNestedMVPModel(new AnnotatedNestedPresenter(notFoundPlaceTypeElement, api, getView(api)));
                 }
 
                 generateVaadinPlatformModuleModel.setErrorPlace(errorComponent);
@@ -144,7 +151,7 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
                 try (Writer writer = filer.createSourceFile(generateVaadinPlatformModuleModel.getFqn()).openWriter()) {
                     writer.write(JavaSourceGenerator.generateJavaSource(generateVaadinPlatformModuleModel, "VaadinPlatformModule.ftl"));
                 } catch (TemplateException | IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -159,7 +166,7 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         return new HashSet<String>() {{
-            add(GenerateVPComponent.class.getName());
+            add(GenerateMVP.class.getName());
         }};
     }
 
@@ -184,7 +191,7 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
                                 presenter.getSuperclass()
                         ).asType(),
                 elementUtils.getTypeElement(
-                        NestedPresenter
+                        BaseNestedPresenter
                                 .class
                                 .getName()
                 ).asType()

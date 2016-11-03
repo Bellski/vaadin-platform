@@ -12,7 +12,7 @@ import ru.vaadinp.uri.UriFragmentSource;
 import ru.vaadinp.error.ErrorManager;
 import ru.vaadinp.place.PlaceManager;
 import ru.vaadinp.place.PlaceUtils;
-import ru.vaadinp.slot.root.RootVPComponent;
+import ru.vaadinp.slot.root.RootMVP;
 
 import javax.inject.Singleton;
 import java.util.HashSet;
@@ -36,7 +36,7 @@ import ${vpNestedComponent.presenterComponent.fqn};
 
 @Module(includes = {
         VaadinPlatformModule.SystemDeclarations.class,
-        VaadinPlatformModule.VPComponentsDeclarations.class
+        VaadinPlatformModule.MVPDeclarations.class
 })
 public class VaadinPlatformModule {
 
@@ -53,21 +53,23 @@ public class VaadinPlatformModule {
     }
 
     @Module(includes = {
-            RootVPComponent.Declarations.class,
+            RootMVP.Declarations.class,
             ${errorPlace.name}.Declarations.class,
             ${notFoundPlace.name}.Declarations.class,
             ${vpNestedComponents?join(",")}${(vpComponents?has_content)?string(",","")}
             ${vpComponents?join("?")}
     })
-    public interface VPComponentsDeclarations {
+    public interface MVPDeclarations {
     }
 
     private final static Set<String> TOKEN_PARTS = new HashSet<>(); static {
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${notFoundPlace.presenterComponent.name}.NAME_TOKEN));
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${errorPlace.presenterComponent.name}.NAME_TOKEN));
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${notFoundPlace.presenterComponent.notFoundToken.encodedNameTokenConstantName}));
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${errorPlace.presenterComponent.errorToken.encodedNameTokenConstantName}));
         <#list vpNestedComponents as vpNestedComponent>
-        <#if vpNestedComponent.presenterComponent.nameToken??>
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${vpNestedComponent.presenterComponent.name}.NAME_TOKEN));
+        <#if vpNestedComponent.presenterComponent.tokenModelList?has_content>
+        <#list vpNestedComponent.presenterComponent.tokenModelList as tokenModel>
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${tokenModel.decodedNameTokenConstantName}));
+        </#list>
         </#if>
         </#list>
     }
@@ -84,20 +86,20 @@ public class VaadinPlatformModule {
     @Singleton
     @DefaultPlaceNameToken
     static String defaultPlaceNameToken() {
-        return ${defaultPlace.presenterComponent.name}.NAME_TOKEN;
+        return ${defaultPlace.presenterComponent.defaultToken.encodedNameTokenConstantName};
     }
 
     @Provides
     @Singleton
     @NotFoundPlaceNameToken
     static String notFoundPlaceNameToken() {
-        return ${notFoundPlace.presenterComponent.name}.NAME_TOKEN;
+        return ${notFoundPlace.presenterComponent.notFoundToken.encodedNameTokenConstantName};
     }
 
     @Provides
     @Singleton
     @ErrorPlaceNameToken
     static String errorPlaceNameToken() {
-        return ${errorPlace.presenterComponent.name}.NAME_TOKEN;
+        return ${errorPlace.presenterComponent.errorToken.encodedNameTokenConstantName};
     }
 }

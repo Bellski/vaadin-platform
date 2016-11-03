@@ -5,14 +5,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ru.vaadinp.slot.BaseSlotRevealBus;
-import ru.vaadinp.slot.SlotRevealBus;
+import ru.vaadinp.slot.root.RootMVP;
 import ru.vaadinp.slot.root.RootPresenter;
-import ru.vaadinp.slot.root.RootVPComponent;
-import ru.vaadinp.test.MockUtils;
-import ru.vaadinp.vp.NestedVPComponent;
-
-import java.util.HashSet;
+import ru.vaadinp.test.NestedMVPBuilder;
+import ru.vaadinp.vp.BaseNestedPresenter;
+import ru.vaadinp.vp.api.NestedMVP;
 
 import static ru.vaadinp.test.MockUtils.mockRootVP;
 
@@ -22,19 +19,19 @@ import static ru.vaadinp.test.MockUtils.mockRootVP;
 @RunWith(JUnit4.class)
 public class SlotTest {
 
-	private final RootVPComponent rootVPComponent = mockRootVP();
+	private final RootMVP rootVPComponent = mockRootVP();
 
-	private final NestedVPComponent<?, ?> aVPComponent = MockUtils.mockNestedVP(
-		DoubleCheck.lazy(PresenterAMock::new), rootVPComponent, RootPresenter.ROOT_SLOT
-	);
+	private final NestedMVP<? extends BaseNestedPresenter<?>> aVPComponent = new NestedMVPBuilder(rootVPComponent, rootVPComponent, RootPresenter.ROOT_SLOT)
+		.withPresenter(DoubleCheck.lazy(() -> new PresenterAMockBase(RootPresenter.ROOT_SLOT)))
+		.build();
 
-	private final NestedVPComponent<?, ?> bVPComponent = MockUtils.mockNestedVP(
-		DoubleCheck.lazy(PresenterBMock::new), aVPComponent, PresenterAMock.MAIN_SLOT
-	);
+	private final NestedMVP<? extends BaseNestedPresenter<?>> bVPComponent = new NestedMVPBuilder(aVPComponent, rootVPComponent, PresenterAMockBase.MAIN_SLOT)
+		.withPresenter(DoubleCheck.lazy(() -> new PresenterBMockBase(PresenterAMockBase.MAIN_SLOT)))
+		.build();
 
 	@Test
 	public void testNestedSlotReveal() {
-		final PresenterBMock presenterBMock = (PresenterBMock) bVPComponent.getPresenter();
+		final PresenterBMockBase presenterBMock = (PresenterBMockBase) bVPComponent.getPresenter();
 
 		Assert.assertFalse(presenterBMock.isVisible());
 		Assert.assertFalse(aVPComponent.getPresenter().isVisible());

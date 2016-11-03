@@ -1,16 +1,15 @@
 package ru.vaadinp.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Created by oem on 10/16/16.
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
+@Documented
 public @interface GenerateNameToken {
+	String nameToken();
 	boolean isDefault() default false;
 	boolean isError() default false;
 	boolean isNotFound() default false;

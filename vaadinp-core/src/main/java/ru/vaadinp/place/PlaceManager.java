@@ -1,14 +1,15 @@
 package ru.vaadinp.place;
 
-import ru.vaadinp.Cleanable;
+import ru.vaadinp.vp.api.PlaceMVP;
 
 /**
  * @author bellski
  *
  * PlaceManager отвечает за навигацию по Presenter'ам
  */
-public interface PlaceManager extends Cleanable {
+public interface PlaceManager {
 	PlaceRequest getCurrentPlaceRequest();
+	PlaceMVP<?> getCurrentPlace();
 	void revealPlace(PlaceRequest request);
 	void revealPlace(PlaceRequest request, boolean updateBrowserUrl);
 

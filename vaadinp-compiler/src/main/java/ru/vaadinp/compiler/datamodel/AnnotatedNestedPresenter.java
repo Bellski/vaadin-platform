@@ -1,6 +1,8 @@
 package ru.vaadinp.compiler.datamodel;
 
 import javax.lang.model.element.TypeElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by oem on 10/21/16.
@@ -8,10 +10,13 @@ import javax.lang.model.element.TypeElement;
 public class AnnotatedNestedPresenter extends AnnotatedPresenterComponent {
 
 	private NestedSlotMirror nestedSlotMirror;
-	private String nameToken;
-	boolean isDefault;
-	boolean isNotFound;
-	boolean isError;
+	private List<TokenModel> tokenModelList = new ArrayList<>();
+
+	private TokenModel tokenModel;
+
+	private TokenModel defaultToken;
+	private TokenModel notFoundToken;
+	private TokenModel errorToken;
 
 	public AnnotatedNestedPresenter(TypeElement presenterElement, ApiMirror apiMirror, ViewMirror viewMirror) {
 		super(presenterElement, apiMirror, viewMirror);
@@ -25,35 +30,43 @@ public class AnnotatedNestedPresenter extends AnnotatedPresenterComponent {
 		this.nestedSlotMirror = nestedSlotMirror;
 	}
 
-	public String getNameToken() {
-		return nameToken;
+	public void addTokenModel(TokenModel tokenModel) {
+		tokenModelList.add(tokenModel);
 	}
 
-	public void setNameToken(String nameToken) {
-		this.nameToken = nameToken;
+	public List<TokenModel> getTokenModelList() {
+		return tokenModelList;
 	}
 
-	public boolean isDefault() {
-		return isDefault;
+	public TokenModel getTokenModel() {
+		return tokenModel;
 	}
 
-	public void setDefault(boolean aDefault) {
-		isDefault = aDefault;
+	public void setTokenModel(TokenModel tokenModel) {
+		this.tokenModel = tokenModel;
 	}
 
-	public boolean isNotFound() {
-		return isNotFound;
+	public TokenModel getDefaultToken() {
+		return defaultToken;
 	}
 
-	public void setNotFound(boolean notFound) {
-		isNotFound = notFound;
+	public void setDefaultToken(TokenModel defaultToken) {
+		this.defaultToken = defaultToken;
 	}
 
-	public boolean isError() {
-		return isError;
+	public TokenModel getNotFoundToken() {
+		return notFoundToken;
 	}
 
-	public void setError(boolean error) {
-		isError = error;
+	public void setNotFoundToken(TokenModel notFoundToken) {
+		this.notFoundToken = notFoundToken;
+	}
+
+	public TokenModel getErrorToken() {
+		return errorToken;
+	}
+
+	public void setErrorToken(TokenModel errorToken) {
+		this.errorToken = errorToken;
 	}
 }

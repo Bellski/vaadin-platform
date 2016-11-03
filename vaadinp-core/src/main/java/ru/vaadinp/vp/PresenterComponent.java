@@ -2,6 +2,9 @@ package ru.vaadinp.vp;
 
 import com.vaadin.ui.Component;
 import ru.vaadinp.slot.*;
+import ru.vaadinp.slot.root.RootMVP;
+import ru.vaadinp.vp.api.MVP;
+import ru.vaadinp.vp.api.Presenter;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -10,9 +13,10 @@ import java.util.stream.Collectors;
 /**
  * Created by oem on 10/7/16.
  */
-public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopupsSlot, Presenter {
+public class PresenterComponent<VIEW extends View> implements Presenter, HasSlots, HasPopupsSlot {
 	private PresenterComponent<?> parent;
-	IsSlot<?> inSlot;
+
+	private IsSlot<?> inSlot;
 
 	private final VIEW view;
 
@@ -22,25 +26,33 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 
 	private final PopupSlot<PresenterComponent<? extends PopupView>> POPUP_SLOT = new PopupSlot<>();
 
-	private VPComponent<? extends PresenterComponent<VIEW>, ?> vpComponent;
+	private MVP<? extends PresenterComponent<?>> mvp;
 
 	public PresenterComponent(VIEW view) {
 		this.view = view;
 		view.bindPresenter(this);
 	}
 
+
 	public PresenterComponent<?> getParent() {
 		return parent;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
-	protected void setVisible(boolean visible) {
+
+	<T extends PresenterComponent<?> & Presenter> void setParent(T parent) {
+		this.parent = parent;
+	}
+
+	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public IsSlot<?> getInSlot() {
 		return inSlot;
 	}
@@ -50,7 +62,7 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 	}
 
 	@Override
-	public <T extends PresenterComponent<?>> void addToSlot(MultiSlot<T> slot, T child) {
+	public <T extends PresenterComponent<?> & Presenter> void addToSlot(MultiSlot<T> slot, T child) {
 		if (child == null) {
 			throw new NullPointerException("Child cannot be null");
 		}
@@ -66,19 +78,20 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 		}
 	}
 
-	boolean isPopup() {
+	@Override
+	public boolean isPopup() {
 		return inSlot != null && inSlot.isPopup();
 	}
 
-	private <T extends PresenterComponent<?>> void bindChild(IsSlot<T> slot, PresenterComponent<?> child) {
-		if (child.parent != this) {
-			if (child.parent != null) {
+	private <T extends PresenterComponent<?> & Presenter> void bindChild(IsSlot<T> slot, T child) {
+		if (child.getParent() != this) {
+			if (child.getParent() != null) {
 				if (!child.getInSlot().isRemovable()) {
 					throw new IllegalArgumentException("Cannot move a child of a permanent slot to another slot");
 				}
-				child.parent.children.remove(child);
+				child.getParent().getChildren().remove(child);
 			}
-			child.parent = this;
+			child.setParent(this);
 			children.add(child);
 		}
 		child.bindToSlot(slot);
@@ -99,8 +112,23 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 		}
 	}
 
-	private <T extends PresenterComponent<?>> void bindToSlot(IsSlot<T> slot) {
+	<T extends PresenterComponent<?> & Presenter> void bindToSlot(IsSlot<T> slot) {
 		this.inSlot = slot;
+	}
+
+	public void internalReset() {
+		if (!isVisible()) {
+			return;
+		}
+		onReset();
+		// use new set to prevent concurrent modification
+		for (PresenterComponent<?> child: new HashSet<PresenterComponent<?>>(getChildren())) {
+			child.internalReset();
+		}
+	}
+
+	protected void onReset() {
+
 	}
 
 	void internalReveal() {
@@ -147,9 +175,9 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 			.forEach(PresenterComponent::unBindChild);
 	}
 
-	@Override
-	public <T extends PresenterComponent<?>> void removeFromSlot(RemovableSlot<T> slot, T child) {
-		if (child == null || child.inSlot != slot) {
+
+	public <T extends PresenterComponent<?> & Presenter> void removeFromSlot(RemovableSlot<T> slot, T child) {
+		if (child == null || child.getInSlot() != slot) {
 			return;
 		}
 
@@ -160,13 +188,13 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 		child.unBindChild();
 	}
 
-	@Override
-	public <T extends PresenterComponent<?>> void setInSlot(IsSlot<T> slot, T child) {
+
+	public <T extends PresenterComponent<?> & Presenter> void setInSlot(IsSlot<T> slot, T child) {
 		setInSlot(slot, child, true);
 	}
 
-	@Override
-	public <T extends PresenterComponent<?>> void setInSlot(IsSlot<T> slot, T child, boolean performReset) {
+
+	public <T extends PresenterComponent<?> & Presenter> void setInSlot(IsSlot<T> slot, T child, boolean performReset) {
 		if (child != null) {
 			bindChild(slot, child);
 
@@ -178,31 +206,38 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 
 			if (isVisible()) {
 				child.internalReveal();
+				if (performReset) {
+					final RootMVP rootPresenter = getMVP().getRootMVP();
+
+					if (rootPresenter != null) {
+						getMVP().getRootMVP().getPresenter().reset();
+					}
+				}
 			}
 		} else {
 			clearSlot((RemovableSlot<?>) slot);
 		}
 	}
 
-	@Override
-	public <T extends PresenterComponent<?>> T getChild(IsSingleSlot<T> slot) {
+
+
+	public <T extends PresenterComponent<?> & Presenter> T getChild(IsSingleSlot<T> slot) {
 		Iterator<T> it = getSlotChildren(slot).iterator();
 		return it.hasNext() ? it.next() : null;
 	}
 
-	@Override
-	public <T extends PresenterComponent<?>> Set<T> getChildren(Slot<T> slot) {
+	public <T extends PresenterComponent<?> & Presenter> Set<T> getChildren(Slot<T> slot) {
 		return getSlotChildren(slot);
 	}
 
 	@Override
-	public <T extends PresenterComponent<?> & Comparable<T>> List<T> getOrderedChildren(OrderedSlot<T> slot) {
+	public <T extends PresenterComponent<?> & Presenter & Comparable<T>> List<T> getOrderedChildren(OrderedSlot<T> slot) {
 		List<T> result = new ArrayList<>(getSlotChildren(slot));
 		Collections.sort(result);
 		return result;
 	}
 
-	private <T extends PresenterComponent<?>> Set<T> getSlotChildren(IsSlot<T> slot) {
+	private <T extends PresenterComponent<?> & Presenter> Set<T> getSlotChildren(IsSlot<T> slot) {
 		return children
 			.stream()
 			.filter(child -> child.getInSlot() == slot)
@@ -210,9 +245,9 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 			.collect(Collectors.toSet());
 	}
 
-	@Override
-	public void clean() {
 
+	public Set<PresenterComponent<?>> getChildren() {
+		return children;
 	}
 
 	@Override
@@ -230,12 +265,17 @@ public class PresenterComponent<VIEW extends View> implements HasSlots, HasPopup
 		return getView().asComponent();
 	}
 
-	public VPComponent<? extends PresenterComponent<VIEW>, ?> getVpComponent() {
-		return vpComponent;
+	public MVP<? extends PresenterComponent<?>> getMVP() {
+		return mvp;
 	}
 
 	@Inject
-	public void setVpComponent(VPComponent<? extends PresenterComponent<VIEW>, ?> vpComponent) {
-		this.vpComponent = vpComponent;
+	public void injectMVP(MVP<? extends PresenterComponent<?>> mvp) {
+		this.mvp = mvp;
+		init();
+	}
+
+	protected void init() {
+
 	}
 }

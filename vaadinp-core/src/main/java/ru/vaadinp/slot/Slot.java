@@ -16,7 +16,8 @@
 package ru.vaadinp.slot;
 
 import ru.vaadinp.vp.PresenterComponent;
+import ru.vaadinp.vp.api.Presenter;
 
-public class Slot<PRESENTER extends PresenterComponent<?>> extends MultiSlot<PRESENTER> {
+public class Slot<P extends PresenterComponent<?> & Presenter> extends MultiSlot<P> {
 
 }

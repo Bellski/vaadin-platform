@@ -9,15 +9,19 @@ import ru.vaadinp.place.BasePlaceManager;
 import ru.vaadinp.place.PlaceManager;
 import ru.vaadinp.place.PlaceRequest;
 import ru.vaadinp.place.PlaceUtils;
-import ru.vaadinp.place.error.BaseErrorPlaceVPComponent;
+import ru.vaadinp.place.error.BaseErrorPlaceMVP;
 import ru.vaadinp.place.error.BaseErrorPlacePresenter;
+import ru.vaadinp.place.error.BaseErrorToken;
+import ru.vaadinp.place.notfound.BaseNotFoundPlaceMVP;
 import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
-import ru.vaadinp.place.notfound.BaseNotFoundPlaceVPComponent;
+import ru.vaadinp.place.notfound.BaseNotFoundToken;
+import ru.vaadinp.slot.root.RootMVP;
 import ru.vaadinp.slot.root.RootPresenter;
-import ru.vaadinp.slot.root.RootVPComponent;
+import ru.vaadinp.test.NestedMVPBuilder;
 import ru.vaadinp.uri.BaseUriFragmentSource;
 import ru.vaadinp.uri.UriFragmentSource;
-import ru.vaadinp.vp.PlaceVPComponent;
+import ru.vaadinp.vp.BaseNestedPresenter;
+import ru.vaadinp.vp.api.PlaceMVP;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,30 +38,32 @@ import static ru.vaadinp.test.MockUtils.*;
 public class BasePlaceManagerTest {
 	public final static String DEFAULT_NAME_TOKEN = "!/dummyDefaultPlace";
 
-	private final RootVPComponent rootVPComponent = mockRootVP();
+	private final RootMVP rootVPComponent = mockRootVP();
 
-	private final PlaceVPComponent<?, ?> defaultVP = (PlaceVPComponent<?, ?>) mockNestedVP(DEFAULT_NAME_TOKEN, rootVPComponent, RootPresenter.ROOT_SLOT);
-	private final BaseErrorPlaceVPComponent baseErrorVP = mockBaseBaseErrorPlaceVP(rootVPComponent);
-	private final BaseNotFoundPlaceVPComponent baseNotFoundPlaceVP = mockBaseNotFoundVP(rootVPComponent);
+	private final PlaceMVP<? extends BaseNestedPresenter<?>> defaultVP = new NestedMVPBuilder(rootVPComponent,  rootVPComponent, RootPresenter.ROOT_SLOT)
+		.withNameToken(DEFAULT_NAME_TOKEN)
+		.buildPlace();
 
+	private final BaseErrorPlaceMVP baseErrorVP = mockBaseBaseErrorPlaceVP(rootVPComponent);
+	private final BaseNotFoundPlaceMVP baseNotFoundPlaceVP = mockBaseNotFoundVP(rootVPComponent);
 
-	final Map<String, PlaceVPComponent<?, ?>> placeByNameToken = new HashMap<>(); {
-		placeByNameToken.put(BaseErrorPlacePresenter.NAME_TOKEN, baseErrorVP);
-		placeByNameToken.put(BaseNotFoundPlacePresenter.NAME_TOKEN, baseNotFoundPlaceVP);
+	final Map<String, PlaceMVP<?>> placeByNameToken = new HashMap<>(); {
+		placeByNameToken.put(BaseErrorToken.ENCODED_VAADINP_ERROR, baseErrorVP);
+		placeByNameToken.put(BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND, baseNotFoundPlaceVP);
 		placeByNameToken.put(DEFAULT_NAME_TOKEN, defaultVP);
 	}
 
 	private final UriFragmentSource uriFragmentSource = new BaseUriFragmentSource();
 
-	private final ErrorManager errorManager = new BaseErrorManager(BaseErrorPlacePresenter.NAME_TOKEN, BaseNotFoundPlacePresenter.NAME_TOKEN);
+	private final ErrorManager errorManager = new BaseErrorManager(BaseErrorToken.ENCODED_VAADINP_ERROR, BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND);
 
 	private final Set<String> nameTokenParts = new HashSet<>(); {
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(DefaultPresenterMock.NAME_TOKEN));
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorPlacePresenter.NAME_TOKEN));
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundPlacePresenter.NAME_TOKEN));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(DefaultPresenterMockBase.NAME_TOKEN));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorToken.ENCODED_VAADINP_ERROR));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND));
 	}
 
-	private final PlaceManager placeManager = new BasePlaceManager(placeByNameToken, nameTokenParts, uriFragmentSource, errorManager, DefaultPresenterMock.NAME_TOKEN);
+	private final PlaceManager placeManager = new BasePlaceManager(placeByNameToken, nameTokenParts, uriFragmentSource, errorManager, DefaultPresenterMockBase.NAME_TOKEN);
 
 	@Test
 	public void goToDefaultPlaceIfUriTokenIsEmpty() {
@@ -68,7 +74,7 @@ public class BasePlaceManagerTest {
 
 	@Test
 	public void goToCurrentExistedUriToken() {
-		uriFragmentSource.setCurrentUriFragment(DefaultPresenterMock.NAME_TOKEN, false);
+		uriFragmentSource.setCurrentUriFragment(DefaultPresenterMockBase.NAME_TOKEN, false);
 
 		placeManager.revealCurrentPlace();
 
@@ -80,7 +86,7 @@ public class BasePlaceManagerTest {
 		placeManager.revealPlace(
 			new PlaceRequest
 				.Builder()
-				.nameToken(DefaultPresenterMock.NAME_TOKEN)
+				.nameToken(DefaultPresenterMockBase.NAME_TOKEN)
 				.build()
 		);
 

@@ -1,7 +1,6 @@
 package ru.vaadinp.slot.root;
 
 import com.vaadin.ui.UI;
-import ru.vaadinp.vp.View;
 import ru.vaadinp.vp.ViewImpl;
 
 import javax.inject.Inject;

@@ -1,6 +1,7 @@
 package ru.vaadinp.vp;
 
 import ru.vaadinp.IsComponent;
+import ru.vaadinp.vp.api.Presenter;
 
 /**
  * Created by oem on 10/7/16.

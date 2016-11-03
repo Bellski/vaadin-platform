@@ -16,8 +16,9 @@
 package ru.vaadinp.slot;
 
 import ru.vaadinp.vp.PresenterComponent;
+import ru.vaadinp.vp.api.Presenter;
 
-public abstract class MultiSlot<T extends PresenterComponent<?>> implements RemovableSlot<T> {
+public abstract class MultiSlot<P extends PresenterComponent<?> & Presenter> implements RemovableSlot<P> {
     @Override
     public boolean isRemovable() {
         return true;

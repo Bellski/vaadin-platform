@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.GenerateNestedVPComponentModel" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.GenerateNestedMVPModel" -->
 package ${packageName};
 
 import dagger.Binds;
@@ -47,10 +47,10 @@ public class ${name} extends PlaceVPComponent<${presenterComponent.name}, ${pres
     }
 
     @Inject
-    public ${name}(Lazy<${presenterComponent.name}> lazyPresenterComponent,
+    public ${name}(Lazy<${presenterComponent.name}> lazyPresenter,
                             Lazy<${presenterComponent.viewMirror.name}> lazyView,
                             ${parent.name} parent) {
 
-        super(${presenterComponent.name}.NAME_TOKEN, lazyPresenterComponent, lazyView, parent);
+        super(${presenterComponent.name}.NAME_TOKEN, lazyPresenter, lazyView, parent);
     }
 }

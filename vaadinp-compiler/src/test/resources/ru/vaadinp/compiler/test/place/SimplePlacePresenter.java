@@ -1,18 +1,14 @@
 package ru.vaadinp.compiler.test.place;
 
 import ru.vaadinp.annotations.GenerateNameToken;
-import ru.vaadinp.annotations.GenerateVPComponent;
+import ru.vaadinp.annotations.GenerateMVP;
 import ru.vaadinp.annotations.dagger.RevealIn;
 import ru.vaadinp.slot.NestedSlot;
 import ru.vaadinp.slot.root.RootPresenter;
-import ru.vaadinp.vp.NestedPresenter;
-import ru.vaadinp.vp.PresenterComponent;
+import ru.vaadinp.vp.BaseNestedPresenter;
 
-@GenerateVPComponent
-public class SimplePlacePresenter extends NestedPresenter<SimplePlace.View> implements SimplePlace.Presenter {
-
-	@GenerateNameToken(isDefault = true)
-	public static final String NAME_TOKEN = "!/simple";
+@GenerateMVP
+public class SimplePlacePresenter extends BaseNestedPresenter<SimplePlace.View> implements SimplePlace.Presenter {
 
 	public SimplePlacePresenter(SimplePlace.View view, @RevealIn(RootPresenter.class) NestedSlot inSlot) {
 		super(view, inSlot);

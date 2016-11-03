@@ -2,6 +2,7 @@ package ru.vaadinp.vp;
 
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import ru.vaadinp.vp.api.Presenter;
 
 /**
  * Created by oem on 10/11/16.

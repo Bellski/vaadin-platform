@@ -4,6 +4,9 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.UI;
 import dagger.Module;
 import dagger.Provides;
+import ru.vaadinp.annotations.GenerateMVP;
+import ru.vaadinp.annotations.GenerateMVPInfo;
+import ru.vaadinp.annotations.GenerateNameToken;
 
 import javax.inject.Singleton;
 

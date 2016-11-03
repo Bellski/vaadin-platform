@@ -5,5 +5,5 @@ package ru.vaadinp.compiler.test.nested;
  */
 public interface SimpleNested {
 	interface View extends ru.vaadinp.vp.View {}
-	interface Presenter extends ru.vaadinp.vp.Presenter {}
+	interface Presenter extends ru.vaadinp.vp.api.Presenter {}
 }

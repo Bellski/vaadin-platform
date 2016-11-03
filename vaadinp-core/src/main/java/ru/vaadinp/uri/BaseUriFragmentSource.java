@@ -61,7 +61,7 @@ public class BaseUriFragmentSource implements UriFragmentSource {
 		}
 	}
 
-	@Override
+
 	public void clean() {
 		uriFragmentChangeHandler = null;
 		currentUriFragment = null;

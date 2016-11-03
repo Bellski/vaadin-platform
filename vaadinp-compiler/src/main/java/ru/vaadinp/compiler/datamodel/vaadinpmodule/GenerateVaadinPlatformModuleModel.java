@@ -1,8 +1,8 @@
 package ru.vaadinp.compiler.datamodel.vaadinpmodule;
 
 import ru.vaadinp.compiler.datamodel.ClassDataModel;
-import ru.vaadinp.compiler.datamodel.GenerateNestedVPComponentModel;
-import ru.vaadinp.compiler.datamodel.GenerateVPComponentModel;
+import ru.vaadinp.compiler.datamodel.GenerateNestedMVPModel;
+import ru.vaadinp.compiler.datamodel.GenerateMVPModel;
 import ru.vaadinp.error.BaseErrorManager;
 import ru.vaadinp.place.BasePlaceManager;
 import ru.vaadinp.uri.PageUriFragmentSource;
@@ -18,16 +18,16 @@ public class GenerateVaadinPlatformModuleModel extends ClassDataModel {
     private ClassDataModel errorManager;
     private ClassDataModel uriFragmentSource;
 
-    private Set<GenerateVPComponentModel> vpComponents;
-    private Collection<GenerateNestedVPComponentModel> vpNestedComponents;
+    private Set<GenerateMVPModel> vpComponents;
+    private Collection<GenerateNestedMVPModel> vpNestedComponents;
 
-    private GenerateNestedVPComponentModel defaultPlace;
-    private GenerateNestedVPComponentModel errorPlace;
-    private GenerateNestedVPComponentModel notFoundPlace;
+    private GenerateNestedMVPModel defaultPlace;
+    private GenerateNestedMVPModel errorPlace;
+    private GenerateNestedMVPModel notFoundPlace;
 
     public GenerateVaadinPlatformModuleModel(String packageName,
-                                             Set<GenerateVPComponentModel> vpComponents,
-                                             Collection<GenerateNestedVPComponentModel> vpNestedComponents) {
+                                             Set<GenerateMVPModel> vpComponents,
+                                             Collection<GenerateNestedMVPModel> vpNestedComponents) {
 
         super("VaadinPlatformModule", packageName);
 
@@ -68,35 +68,35 @@ public class GenerateVaadinPlatformModuleModel extends ClassDataModel {
         this.uriFragmentSource = uriFragmentSource;
     }
 
-    public Set<GenerateVPComponentModel> getVpComponents() {
+    public Set<GenerateMVPModel> getVpComponents() {
         return vpComponents;
     }
 
-    public Collection<GenerateNestedVPComponentModel> getVpNestedComponents() {
+    public Collection<GenerateNestedMVPModel> getVpNestedComponents() {
         return vpNestedComponents;
     }
 
-    public GenerateNestedVPComponentModel getDefaultPlace() {
+    public GenerateNestedMVPModel getDefaultPlace() {
         return defaultPlace;
     }
 
-    public void setDefaultPlace(GenerateNestedVPComponentModel defaultPlace) {
+    public void setDefaultPlace(GenerateNestedMVPModel defaultPlace) {
         this.defaultPlace = defaultPlace;
     }
 
-    public GenerateNestedVPComponentModel getErrorPlace() {
+    public GenerateNestedMVPModel getErrorPlace() {
         return errorPlace;
     }
 
-    public void setErrorPlace(GenerateNestedVPComponentModel errorPlace) {
+    public void setErrorPlace(GenerateNestedMVPModel errorPlace) {
         this.errorPlace = errorPlace;
     }
 
-    public GenerateNestedVPComponentModel getNotFoundPlace() {
+    public GenerateNestedMVPModel getNotFoundPlace() {
         return notFoundPlace;
     }
 
-    public void setNotFoundPlace(GenerateNestedVPComponentModel notFoundPlace) {
+    public void setNotFoundPlace(GenerateNestedMVPModel notFoundPlace) {
         this.notFoundPlace = notFoundPlace;
     }
 }

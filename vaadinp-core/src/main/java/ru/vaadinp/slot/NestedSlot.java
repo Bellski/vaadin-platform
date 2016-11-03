@@ -1,11 +1,11 @@
 package ru.vaadinp.slot;
 
-import ru.vaadinp.vp.NestedPresenter;
+import ru.vaadinp.vp.BaseNestedPresenter;
 
 /**
  * Created by Aleksandr on 07.08.2016.
  */
-public class NestedSlot implements IsNested<NestedPresenter<?>> {
+public class NestedSlot implements IsNested<BaseNestedPresenter<?>> {
     @Override
     public boolean isPopup() {
         return false;
