@@ -36,7 +36,7 @@ public class BaseNotFoundPlaceMVP extends NestedMVPImpl<BaseNotFoundPlacePresent
 		@Binds
 		@IntoMap
 		@PlacesMap
-		@StringKey(BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND)
+		@StringKey(BaseNotFoundPlaceToken.ENCODED_VAADINP_NOTFOUND)
 		PlaceMVP<?> place(BaseNotFoundPlaceMVP mvp);
 	}
 
@@ -53,7 +53,7 @@ public class BaseNotFoundPlaceMVP extends NestedMVPImpl<BaseNotFoundPlacePresent
 			lazyPresenter,
 			rootMVP,
 			parent,
-			new Place(BaseNotFoundToken.VAADINP_NOUTFOUND_NAME_TOKEN)
+			new Place(BaseNotFoundPlaceToken.VAADINP_NOTFOUND_NAME_TOKEN)
 		);
 	}
 }

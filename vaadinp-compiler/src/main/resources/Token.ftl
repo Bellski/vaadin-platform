@@ -1,19 +1,21 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.TokenModel" -->
-package ${name};
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.AnnotatedNestedPresenter" -->
+package ${packageName};
 
 import ru.vaadinp.place.NameToken;
 
-public class ${name} {
-    public static final String ${encodedNameTokenConstantName} = "${decodedNameToken}";
-<#if parameterNames??>
+public class ${apiMirror.name}Token {
+<#list tokenSetModel.tokenModelList as tokenModel>
+    public static final String ${tokenModel.encodedNameTokenConstantName} = "${tokenModel.decodedNameToken}";
+<#if tokenModel.parameterNames??>
 <#assign joinedParamNames>
-${parameterNames?join(",")}
+${tokenModel.parameterNames?join(",")}
 </#assign>
 <#assign joinedParamIndexes>
-${parameterIndexes?join(",")}
+${tokenModel.parameterIndexes?join(",")}
 </#assign>
-    static final NameToken ${encodedNameTokenConstantName}_TOKEN = new NameToken(${decodedNameToken}, ${encodedNameTokenConstantName}, new String[] {${joinedParamNames}, new int[] {${joinedParamIndexes});
+    static final NameToken ${tokenModel.encodedNameTokenConstantName}_TOKEN = new NameToken(${tokenModel.decodedNameToken}, ${tokenModel.encodedNameTokenConstantName}, new String[] {${joinedParamNames}, new int[] {${joinedParamIndexes});
 <#else>
-    static final NameToken ${encodedNameTokenConstantName}_TOKEN = new NameToken(${encodedNameTokenConstantName});
+    static final NameToken ${tokenModel.encodedNameTokenConstantName}_TOKEN = new NameToken(${tokenModel.encodedNameTokenConstantName});
 </#if>
+</#list>
 }

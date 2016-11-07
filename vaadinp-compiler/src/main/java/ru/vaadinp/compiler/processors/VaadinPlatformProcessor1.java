@@ -3,7 +3,7 @@ package ru.vaadinp.compiler.processors;
 import com.sun.tools.javac.code.Symbol;
 import freemarker.template.TemplateException;
 import ru.vaadinp.annotations.GenerateMVP;
-import ru.vaadinp.compiler.JavaSourceGenerator;
+import ru.vaadinp.compiler2.JavaSourceGenerator;
 import ru.vaadinp.compiler.datamodel.*;
 import ru.vaadinp.compiler.datamodel.vaadinpmodule.GenerateVaadinPlatformModuleModel;
 import ru.vaadinp.place.error.BaseErrorPlacePresenter;
@@ -117,7 +117,7 @@ public class VaadinPlatformProcessor1 extends AbstractProcessor {
             if (rootComponent != null) {
                 final GenerateVaadinPlatformModuleModel generateVaadinPlatformModuleModel = new GenerateVaadinPlatformModuleModel(
                         rootComponent.getPackageName(),
-                        vpComponents,
+                        (List<GenerateMVPModel>) vpComponents,
                         vpComponentByPresenterTypeElement.values()
                 );
 

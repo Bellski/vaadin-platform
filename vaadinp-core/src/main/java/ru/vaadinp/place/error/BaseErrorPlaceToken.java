@@ -5,7 +5,7 @@ import ru.vaadinp.place.NameToken;
 /**
  * Created by oem on 11/3/16.
  */
-public class BaseErrorToken {
+public class BaseErrorPlaceToken {
 	public static final String ENCODED_VAADINP_ERROR = "!/vaadinp-error";
 	public static final String DECODED_VAADINP_ERROR = "!/vaadinp-error";
 

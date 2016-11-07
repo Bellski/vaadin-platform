@@ -1,20 +1,24 @@
 package ru.vaadinp.compiler.datamodel;
 
+import java.util.List;
+
 /**
  * Created by oem on 11/3/16.
  */
-public class TokenModel extends ClassDataModel {
+public class TokenModel  {
+	private TokenSetModel tokenSetModel;
+
 	private String encodedNameToken;
 	private String decodedNameToken;
-	private String[] parameterNames;
-	private int[] parameterIndexes;
+	private List<String> parameterNames;
+	private List<Integer> parameterIndexes;
 
 	private String encodedNameTokenConstantName;
 	private String decodedNameTokenConstantName;
 	private String tokenNameConstantName;
 
-	public TokenModel(String name, String packageName) {
-		super(name + "Token", packageName);
+	public void setTokenSetModel(TokenSetModel tokenSetModel) {
+		this.tokenSetModel = tokenSetModel;
 	}
 
 	public String getEncodedNameToken() {
@@ -45,31 +49,31 @@ public class TokenModel extends ClassDataModel {
 		tokenNameConstantName = constantName + "_TOKEN";
 	}
 
-	public String[] getParameterNames() {
+	public List<String> getParameterNames() {
 		return parameterNames;
 	}
 
-	public void setParameterNames(String[] parameterNames) {
+	public void setParameterNames(List<String> parameterNames) {
 		this.parameterNames = parameterNames;
 	}
 
-	public int[] getParameterIndexes() {
+	public List<Integer> getParameterIndexes() {
 		return parameterIndexes;
 	}
 
-	public void setParameterIndexes(int[] parameterIndexes) {
+	public void setParameterIndexes(List<Integer> parameterIndexes) {
 		this.parameterIndexes = parameterIndexes;
 	}
 
 	public String getEncodedNameTokenConstantName() {
-		return getName() + "." + encodedNameTokenConstantName;
+		return tokenSetModel.getName() + "." + encodedNameTokenConstantName;
 	}
 
 	public String getDecodedNameTokenConstantName() {
-		return getName() + "." + decodedNameTokenConstantName;
+		return tokenSetModel.getName() + "." + decodedNameTokenConstantName;
 	}
 
 	public String getTokenNameConstantName() {
-		return getName() + "." + tokenNameConstantName;
+		return tokenSetModel.getName() + "." + tokenNameConstantName;
 	}
 }

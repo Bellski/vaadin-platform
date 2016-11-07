@@ -17,6 +17,8 @@ import ru.vaadinp.annotations.dagger.PlacesMap;
 import ru.vaadinp.place.Place;
 import ru.vaadinp.vp.api.PlaceMVP;
 
+import ru.vaadinp.slot.root.RootMVP;
+
 @Singleton
 public class SimplePlaceMVP extends NestedMVPImpl<SimplePlacePresenter> {
 

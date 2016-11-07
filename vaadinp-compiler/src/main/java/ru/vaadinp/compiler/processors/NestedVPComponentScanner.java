@@ -25,11 +25,7 @@ public class NestedVPComponentScanner extends VPComponentScanner {
 
     @Override
     public GenerateMVPModel visitType(TypeElement e, Void aVoid) {
-        final GenerateMVPInfo generateMVPInfoAnnotation = e.getAnnotation(GenerateMVPInfo.class);
 
-        if (generateMVPInfoAnnotation != null) {
-            generateNestedMVPModel.setMvpInfo(generateMVPInfoAnnotation);
-        }
 
         return super.visitType(e, aVoid);
     }

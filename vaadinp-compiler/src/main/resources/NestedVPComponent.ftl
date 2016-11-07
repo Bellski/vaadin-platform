@@ -17,11 +17,11 @@ import dagger.Provides;
 import ru.vaadinp.annotations.dagger.RevealIn;
 import ru.vaadinp.slot.NestedSlot;
 </#if>
-<#if presenterComponent.nameToken??>
+<#if presenterComponent.tokenSetModel?has_content>
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import ru.vaadinp.annotations.dagger.PlacesMap;
-import ru.vaadinp.vp.Place;
+import ru.vaadinp.place.Place;
 import ru.vaadinp.vp.api.PlaceMVP;
 </#if>
 <#if mvpInfo??>
@@ -40,11 +40,7 @@ ${(mvpInfo.caption()?has_content)?string("\"${mvpInfo.caption()}\"", "null")}
 ${(mvpInfo.caption()??)?string("\"${mvpInfo.title()}\"", "null")}
 </#assign>
 <#assign historyToken>
-<#if presenterComponent.tokenModel??>
-"${presenterComponent.tokenModel.decodedNameTokenConstantName}"
-<#else>
-null
-</#if>
+${(mvpInfo.caption()??)?string("\"${mvpInfo.historyToken()}\"", "null")}
 </#assign>
 <#assign priority>
 ${mvpInfo.priority()}
@@ -76,13 +72,14 @@ public class ${name} extends NestedMVPImpl<${presenterComponent.name}> {
         }
         </#if>
 
-        <#if presenterComponent.tokenModelList?has_content>
-        <#else>
+        <#if presenterComponent.tokenSetModel??>
+        <#list presenterComponent.tokenSetModel.tokenModelList as tokenModel>
         @IntoMap
         @PlacesMap
         @Binds
-        @StringKey(${presenterComponent.tokenModel.encodedNameTokenConstantName})
+        @StringKey(${tokenModel.encodedNameTokenConstantName})
         PlaceMVP<?> place(${name} mvp);
+        </#list>
         </#if>
     }
 
@@ -91,13 +88,12 @@ public class ${name} extends NestedMVPImpl<${presenterComponent.name}> {
                    Lazy<${presenterComponent.name}> lazyPresenter,
                    RootMVP rootMVP,
                    ${parent.name} parent) {
-            <#assign placeInit>
-            <#if presenterComponent.tokenModelList?has_content>
-            ${(presenterComponent.nameToken??)?string("new Place(${presenterComponent.tokenModelList?join(",")})", "null")}
-            <#else>
-            ${(presenterComponent.nameToken??)?string("new Place(${presenterComponent.tokenModel.tokenNameConstantName})", "null")}
-            </#if>
-            </#assign>
+<#assign placeInit>
+<#if presenterComponent.tokenSetModel??>
+new Place(${presenterComponent.tokenSetModel.tokenConstantNameList?join(',')})
+<#else>null
+</#if>
+</#assign>
             super(
                 null,
                 lazyView,

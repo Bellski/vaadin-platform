@@ -28,6 +28,7 @@ public class GenerateNestedMVPModel extends GenerateMVPModel {
 
     public void setParent(GenerateNestedMVPModel parent) {
         this.parent = parent;
+        this.parentPresenterElement = parent.getPresenterComponent().getPresenterElement();
     }
 
     public TypeElement getParentPresenterElement() {

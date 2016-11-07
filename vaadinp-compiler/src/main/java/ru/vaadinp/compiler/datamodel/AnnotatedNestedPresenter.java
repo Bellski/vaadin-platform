@@ -10,9 +10,8 @@ import java.util.List;
 public class AnnotatedNestedPresenter extends AnnotatedPresenterComponent {
 
 	private NestedSlotMirror nestedSlotMirror;
-	private List<TokenModel> tokenModelList = new ArrayList<>();
 
-	private TokenModel tokenModel;
+	private TokenSetModel tokenSetModel;
 
 	private TokenModel defaultToken;
 	private TokenModel notFoundToken;
@@ -30,20 +29,12 @@ public class AnnotatedNestedPresenter extends AnnotatedPresenterComponent {
 		this.nestedSlotMirror = nestedSlotMirror;
 	}
 
-	public void addTokenModel(TokenModel tokenModel) {
-		tokenModelList.add(tokenModel);
+	public void setTokenSetModel(TokenSetModel tokenSetModel) {
+		this.tokenSetModel = tokenSetModel;
 	}
 
-	public List<TokenModel> getTokenModelList() {
-		return tokenModelList;
-	}
-
-	public TokenModel getTokenModel() {
-		return tokenModel;
-	}
-
-	public void setTokenModel(TokenModel tokenModel) {
-		this.tokenModel = tokenModel;
+	public TokenSetModel getTokenSetModel() {
+		return tokenSetModel;
 	}
 
 	public TokenModel getDefaultToken() {
@@ -68,5 +59,14 @@ public class AnnotatedNestedPresenter extends AnnotatedPresenterComponent {
 
 	public void setErrorToken(TokenModel errorToken) {
 		this.errorToken = errorToken;
+	}
+
+	public void addTokenModel(TokenModel tokenModel) {
+		if (tokenSetModel == null) {
+			tokenSetModel = new TokenSetModel(getApiMirror().getName() + "TokenSet", getPackageName());
+		}
+
+		tokenModel.setTokenSetModel(tokenSetModel);
+		tokenSetModel.add(tokenModel);
 	}
 }

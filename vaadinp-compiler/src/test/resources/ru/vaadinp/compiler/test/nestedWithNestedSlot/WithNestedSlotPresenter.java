@@ -7,8 +7,9 @@ import ru.vaadinp.slot.NestedSlot;
 import ru.vaadinp.slot.root.RootPresenter;
 import ru.vaadinp.vp.BaseNestedPresenter;
 
-@GenerateMVP
-@GenerateMVPInfo(title = "WithNestedSlot")
+@GenerateMVP(
+		mvpInfo = @GenerateMVPInfo(title = "WithNestedSlot")
+)
 public class WithNestedSlotPresenter extends BaseNestedPresenter<WithNestedSlot.View> implements WithNestedSlot.Presenter {
 
 	public static final NestedSlot MAIN_SLOT = new NestedSlot();

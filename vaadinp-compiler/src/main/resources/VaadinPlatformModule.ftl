@@ -22,9 +22,9 @@ import ${placeManager.fqn};
 import ${errorManager.fqn};
 import ${uriFragmentSource.fqn};
 import ${errorPlace.fqn};
-import ${errorPlace.presenterComponent.fqn};
+import ${errorPlace.presenterComponent.errorToken.fqn};
 import ${notFoundPlace.fqn};
-import ${notFoundPlace.presenterComponent.fqn};
+import ${notFoundPlace.presenterComponent.notFoundToken.fqn};
 <#list vpComponents as vpComponent>
 import ${vpComponent.fqn};
 import ${vpComponent.presenterComponent.fqn};
@@ -63,8 +63,8 @@ public class VaadinPlatformModule {
     }
 
     private final static Set<String> TOKEN_PARTS = new HashSet<>(); static {
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${notFoundPlace.presenterComponent.notFoundToken.encodedNameTokenConstantName}));
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${errorPlace.presenterComponent.errorToken.encodedNameTokenConstantName}));
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${notFoundPlace.presenterComponent.notFoundToken.decodedNameTokenConstantName}));
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(${errorPlace.presenterComponent.errorToken.decodedNameTokenConstantName}));
         <#list vpNestedComponents as vpNestedComponent>
         <#if vpNestedComponent.presenterComponent.tokenModelList?has_content>
         <#list vpNestedComponent.presenterComponent.tokenModelList as tokenModel>

@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 public @interface GenerateMVPInfo {
 	String caption() default "";
 	String title() default "";
+	String historyToken() default "";
 	String icon() default "";
 	int priority() default -1;
 }

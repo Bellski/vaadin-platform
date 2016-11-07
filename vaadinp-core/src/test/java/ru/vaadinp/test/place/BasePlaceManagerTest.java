@@ -10,11 +10,9 @@ import ru.vaadinp.place.PlaceManager;
 import ru.vaadinp.place.PlaceRequest;
 import ru.vaadinp.place.PlaceUtils;
 import ru.vaadinp.place.error.BaseErrorPlaceMVP;
-import ru.vaadinp.place.error.BaseErrorPlacePresenter;
-import ru.vaadinp.place.error.BaseErrorToken;
+import ru.vaadinp.place.error.BaseErrorPlaceToken;
 import ru.vaadinp.place.notfound.BaseNotFoundPlaceMVP;
-import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
-import ru.vaadinp.place.notfound.BaseNotFoundToken;
+import ru.vaadinp.place.notfound.BaseNotFoundPlaceToken;
 import ru.vaadinp.slot.root.RootMVP;
 import ru.vaadinp.slot.root.RootPresenter;
 import ru.vaadinp.test.NestedMVPBuilder;
@@ -48,19 +46,19 @@ public class BasePlaceManagerTest {
 	private final BaseNotFoundPlaceMVP baseNotFoundPlaceVP = mockBaseNotFoundVP(rootVPComponent);
 
 	final Map<String, PlaceMVP<?>> placeByNameToken = new HashMap<>(); {
-		placeByNameToken.put(BaseErrorToken.ENCODED_VAADINP_ERROR, baseErrorVP);
-		placeByNameToken.put(BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND, baseNotFoundPlaceVP);
+		placeByNameToken.put(BaseErrorPlaceToken.ENCODED_VAADINP_ERROR, baseErrorVP);
+		placeByNameToken.put(BaseNotFoundPlaceToken.ENCODED_VAADINP_NOTFOUND, baseNotFoundPlaceVP);
 		placeByNameToken.put(DEFAULT_NAME_TOKEN, defaultVP);
 	}
 
 	private final UriFragmentSource uriFragmentSource = new BaseUriFragmentSource();
 
-	private final ErrorManager errorManager = new BaseErrorManager(BaseErrorToken.ENCODED_VAADINP_ERROR, BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND);
+	private final ErrorManager errorManager = new BaseErrorManager(BaseErrorPlaceToken.ENCODED_VAADINP_ERROR, BaseNotFoundPlaceToken.ENCODED_VAADINP_NOTFOUND);
 
 	private final Set<String> nameTokenParts = new HashSet<>(); {
 		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(DefaultPresenterMockBase.NAME_TOKEN));
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorToken.ENCODED_VAADINP_ERROR));
-		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundToken.ENCODED_VAADINP_NOUTFOUND));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorPlaceToken.ENCODED_VAADINP_ERROR));
+		nameTokenParts.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundPlaceToken.ENCODED_VAADINP_NOTFOUND));
 	}
 
 	private final PlaceManager placeManager = new BasePlaceManager(placeByNameToken, nameTokenParts, uriFragmentSource, errorManager, DefaultPresenterMockBase.NAME_TOKEN);

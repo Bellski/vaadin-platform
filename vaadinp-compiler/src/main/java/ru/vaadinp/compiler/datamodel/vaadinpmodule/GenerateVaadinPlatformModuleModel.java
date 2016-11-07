@@ -8,7 +8,7 @@ import ru.vaadinp.place.BasePlaceManager;
 import ru.vaadinp.uri.PageUriFragmentSource;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by Aleksandr on 22.10.2016.
@@ -18,7 +18,7 @@ public class GenerateVaadinPlatformModuleModel extends ClassDataModel {
     private ClassDataModel errorManager;
     private ClassDataModel uriFragmentSource;
 
-    private Set<GenerateMVPModel> vpComponents;
+    private List<GenerateMVPModel> vpComponents;
     private Collection<GenerateNestedMVPModel> vpNestedComponents;
 
     private GenerateNestedMVPModel defaultPlace;
@@ -26,7 +26,7 @@ public class GenerateVaadinPlatformModuleModel extends ClassDataModel {
     private GenerateNestedMVPModel notFoundPlace;
 
     public GenerateVaadinPlatformModuleModel(String packageName,
-                                             Set<GenerateMVPModel> vpComponents,
+                                             List<GenerateMVPModel> vpComponents,
                                              Collection<GenerateNestedMVPModel> vpNestedComponents) {
 
         super("VaadinPlatformModule", packageName);
@@ -68,7 +68,7 @@ public class GenerateVaadinPlatformModuleModel extends ClassDataModel {
         this.uriFragmentSource = uriFragmentSource;
     }
 
-    public Set<GenerateMVPModel> getVpComponents() {
+    public List<GenerateMVPModel> getVpComponents() {
         return vpComponents;
     }
 

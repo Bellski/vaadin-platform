@@ -1,4 +1,4 @@
-package ru.vaadinp.compiler;
+package ru.vaadinp.compiler2;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -14,7 +14,7 @@ import java.io.StringWriter;
  */
 public class JavaSourceGenerator {
     private static final Configuration configuration = new Configuration(Configuration.VERSION_2_3_23); static {
-        configuration.setClassForTemplateLoading(JavaSourceGenerator.class, "/");
+        configuration.setClassForTemplateLoading(JavaSourceGenerator.class, "/templates");
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         configuration.setLogTemplateExceptions(false);

@@ -7,8 +7,6 @@ import ru.vaadinp.annotations.dagger.DefaultPlaceNameToken;
 import ru.vaadinp.annotations.dagger.ErrorPlaceNameToken;
 import ru.vaadinp.annotations.dagger.NameTokenParts;
 import ru.vaadinp.annotations.dagger.NotFoundPlaceNameToken;
-import ru.vaadinp.place.error.BaseErrorToken;
-import ru.vaadinp.place.notfound.BaseNotFoundToken;
 import ru.vaadinp.uri.UriFragmentSource;
 import ru.vaadinp.error.ErrorManager;
 import ru.vaadinp.place.PlaceManager;
@@ -23,9 +21,9 @@ import ru.vaadinp.place.BasePlaceManager;
 import ru.vaadinp.error.BaseErrorManager;
 import ru.vaadinp.uri.PageUriFragmentSource;
 import ru.vaadinp.place.error.BaseErrorPlaceMVP;
-import ru.vaadinp.place.error.BaseErrorPlacePresenter;
+import ru.vaadinp.place.error.BaseErrorPlaceToken;
 import ru.vaadinp.place.notfound.BaseNotFoundPlaceMVP;
-import ru.vaadinp.place.notfound.BaseNotFoundPlacePresenter;
+import ru.vaadinp.place.notfound.BaseNotFoundPlaceToken;
 import ru.vaadinp.compiler.test.nested.SimpleNestedMVP;
 import ru.vaadinp.compiler.test.nested.SimpleNestedPresenter;
 
@@ -58,8 +56,8 @@ public class VaadinPlatformModule {
     }
 
     private final static Set<String> TOKEN_PARTS = new HashSet<>(); static {
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorToken.DECODED_VAADINP_ERROR));
-        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundToken.DECODED_VAADINP_NOUTFOUND));
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(BaseNotFoundPlaceToken.DECODED_VAADINP_NOTFOUND));
+        TOKEN_PARTS.addAll(PlaceUtils.breakIntoNameTokenParts(BaseErrorPlaceToken.DECODED_VAADINP_ERROR));
     }
 
     @Provides
@@ -73,20 +71,20 @@ public class VaadinPlatformModule {
     @Singleton
     @DefaultPlaceNameToken
     static String defaultPlaceNameToken() {
-        return BaseNotFoundToken.DECODED_VAADINP_NOUTFOUND;
+        return BaseNotFoundPlaceToken.ENCODED_VAADINP_NOTFOUND;
     }
 
     @Provides
     @Singleton
     @NotFoundPlaceNameToken
     static String notFoundPlaceNameToken() {
-        return BaseErrorToken.DECODED_VAADINP_ERROR;
+        return BaseNotFoundPlaceToken.ENCODED_VAADINP_NOTFOUND;
     }
 
     @Provides
     @Singleton
     @ErrorPlaceNameToken
     static String errorPlaceNameToken() {
-        return BaseErrorToken.DECODED_VAADINP_ERROR;
+        return BaseErrorPlaceToken.ENCODED_VAADINP_ERROR;
     }
 }
