@@ -2,6 +2,7 @@ package ru.vaadinp.place;
 
 import dagger.Lazy;
 import ru.vaadinp.security.Gatekeeper;
+import ru.vaadinp.vp.api.GateKeeperMVP;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +14,13 @@ public class Place {
 	private Map<String, NameToken> nameTokenByEncodedNameToken;
 	private NameToken nameToken;
 
-	private final Lazy<Gatekeeper> lazyGatekeeper;
+	private final Lazy<? extends GateKeeperMVP> lazyGatekeeper;
 
 	public Place(NameToken... nameTokens) {
 		this(null, nameTokens);
 	}
 
-	public Place(Lazy<Gatekeeper> lazyGatekeeper, NameToken... nameTokens) {
+	public Place(Lazy<? extends GateKeeperMVP> lazyGatekeeper, NameToken... nameTokens) {
 
 		if (nameTokens.length == 1) {
 			nameToken = nameTokens[0];
@@ -42,8 +43,8 @@ public class Place {
 		}
 	}
 
-	public Lazy<Gatekeeper> getLazyGatekeeper() {
-		return lazyGatekeeper;
+	public GateKeeperMVP getGateKeeper() {
+		return lazyGatekeeper.get();
 	}
 
 	public boolean isSecured() {

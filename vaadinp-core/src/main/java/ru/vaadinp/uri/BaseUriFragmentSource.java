@@ -1,6 +1,5 @@
 package ru.vaadinp.uri;
 
-import com.vaadin.server.Page;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
 
 /**

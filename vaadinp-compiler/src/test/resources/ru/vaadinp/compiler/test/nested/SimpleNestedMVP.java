@@ -3,18 +3,27 @@ package ru.vaadinp.compiler.test.nested;
 import dagger.Binds;
 import dagger.Lazy;
 import dagger.Module;
-import ru.vaadinp.slot.root.RootMVP;
-import ru.vaadinp.vp.NestedMVPImpl;
-import ru.vaadinp.vp.BaseNestedPresenter;
-import ru.vaadinp.vp.api.NestedMVP;
-
+import dagger.Provides;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
+import ru.vaadinp.annotations.dagger.RevealIn;
+import ru.vaadinp.slot.NestedSlot;
 import ru.vaadinp.slot.root.RootMVP;
+import ru.vaadinp.vp.BaseNestedPresenter;
+import ru.vaadinp.vp.NestedMVPImpl;
+import ru.vaadinp.vp.api.NestedMVP;
 
 @Singleton
 public class SimpleNestedMVP extends NestedMVPImpl<SimpleNestedPresenter> {
+
+	@Inject
+	public SimpleNestedMVP(Lazy<SimpleNestedView> view,
+						   Lazy<SimpleNestedPresenter> presenter,
+						   RootMVP rootMVP,
+						   RootMVP parent) {
+
+		super(view, presenter, rootMVP, parent);
+	}
 
 	@Module
 	public interface Declarations {
@@ -26,22 +35,12 @@ public class SimpleNestedMVP extends NestedMVPImpl<SimpleNestedPresenter> {
 
 		@Binds
 		SimpleNested.Presenter presenter(SimpleNestedPresenter presenter);
-	}
 
-	@Inject
-	public SimpleNestedMVP(Lazy<SimpleNestedView> lazyView,
-						   Lazy<SimpleNestedPresenter> lazyPresenter,
-						   RootMVP rootMVP,
-						   RootMVP parent) {
-
-		super(
-			null,
-			lazyView,
-			lazyPresenter,
-			null,
-			rootMVP,
-			parent,
-			null
-		);
+		@Provides
+		@Singleton
+		@RevealIn(SimpleNestedPresenter.class)
+		static NestedSlot nestedSlot() {
+			return SimpleNestedPresenter.MAIN_SLOT;
+		}
 	}
 }

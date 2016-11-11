@@ -1,5 +1,11 @@
 package ru.vaadinp.compiler.datamodel;
 
+import com.sun.tools.javac.code.Symbol;
+
+import javax.lang.model.element.Element;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by Aleksandr on 22.10.2016.
  */
@@ -7,6 +13,12 @@ public class ClassDataModel {
     private final String name;
     private final String packageName;
     private final String fqn;
+
+    private Set<String> imports = new HashSet<>();
+
+    public ClassDataModel(Element element) {
+        this(element.getSimpleName().toString(), Symbol.class.cast(element).packge().getQualifiedName().toString());
+    }
 
     public ClassDataModel(String name, String packageName) {
         this(name, packageName, packageName + "." + name);
@@ -32,6 +44,22 @@ public class ClassDataModel {
 
     public String getFqn() {
         return fqn;
+    }
+
+    public Set<String> getImports() {
+        return imports;
+    }
+
+    public void addImport(String fqn) {
+        imports.add(fqn);
+    }
+
+    public void importClass(Class<?> clazz) {
+        imports.add(clazz.getName());
+    }
+
+    public void importClassDataModel(ClassDataModel classDataModel) {
+        imports.add(classDataModel.getFqn());
     }
 
     @Override

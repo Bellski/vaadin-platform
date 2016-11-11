@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler2.datamodel.MVPModel" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.MVPModel" -->
 package ${packageName};
 
 <#list imports as import>

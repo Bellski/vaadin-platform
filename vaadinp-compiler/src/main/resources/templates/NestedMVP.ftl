@@ -1,12 +1,18 @@
-<#-- @ftlvariable name="" type="ru.vaadinp.compiler2.datamodel.NestedMVPModel" -->
+<#-- @ftlvariable name="" type="ru.vaadinp.compiler.datamodel.NestedMVPModel" -->
 package ${packageName};
 
 <#list imports as import>
 import ${import};
 </#list>
 
+<#assign extends>
+    <#if hasTokenSetModel()>
+    <#else>NestedMVPImpl
+    </#if>
+</#assign>
+
 @Singleton
-public class ${name} extends NestedMVPImpl<${presenterImplName}> {
+public class ${name} extends ${extends} <${presenterImplName}> {
 
     @Module
     public interface Declarations {
@@ -24,7 +30,7 @@ public class ${name} extends NestedMVPImpl<${presenterImplName}> {
         @PlacesMap
         @Binds
         @StringKey(${tokenModel.encodedNameTokenConstantName})
-        PlaceMVP<?> ${tokenModel.simplifiedNameToken}_place(${name} mvp);
+        PlaceMVP<?> ${tokenModel.getSimplifiedNameToken()}_place(${name} mvp);
         </#list>
         <#if nestedSlotConstantName??>
         @Provides

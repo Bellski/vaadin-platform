@@ -55,9 +55,9 @@ public class NestedMVPBuilder {
 		NestedMVP<?> mvp;
 
 		if (nameToken == null) {
-			mvp = new NestedMVPImpl<>(null, lazyView, lazyPresenter, null, rootMVP, parent, null);
+			mvp = new NestedMVPImpl<>(lazyView, lazyPresenter, rootMVP, null, parent, null);
 		} else {
-			mvp = new NestedMVPImpl<>(null, lazyView, lazyPresenter, null, rootMVP, parent, new Place(new NameToken(nameToken, nameToken)));
+			mvp = new NestedMVPImpl<>(lazyView, lazyPresenter, rootMVP, null, parent, new Place(new NameToken(nameToken, nameToken)));
 		}
 
 		return mvp;

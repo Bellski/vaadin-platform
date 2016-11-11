@@ -12,6 +12,10 @@ public class MVPInfo {
 	private final Resource icon;
 	private final int priority;
 
+	public MVPInfo(String title) {
+		this(null, title, null, null, -1);
+	}
+
 	public MVPInfo(String title, String historyToken) {
 		this(null, title, historyToken, null, -1);
 	}

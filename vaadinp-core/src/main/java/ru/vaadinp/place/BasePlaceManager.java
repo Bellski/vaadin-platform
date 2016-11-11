@@ -4,6 +4,7 @@ import ru.vaadinp.annotations.dagger.DefaultPlaceNameToken;
 import ru.vaadinp.annotations.dagger.NameTokenParts;
 import ru.vaadinp.annotations.dagger.PlacesMap;
 import ru.vaadinp.error.ErrorManager;
+import ru.vaadinp.security.Gatekeeper;
 import ru.vaadinp.uri.UriFragmentSource;
 import ru.vaadinp.uri.handlers.UriFragmentChangeHandler;
 import ru.vaadinp.vp.BaseNestedPresenter;
@@ -115,32 +116,34 @@ public class BasePlaceManager implements PlaceManager, UriFragmentChangeHandler 
 	}
 
 	protected void doRevealPlace(PlaceRequest request, PlaceMVP<?> mvp, boolean updateBrowser) throws UnsupportedEncodingException {
-		this.currentPlace = mvp;
-
 		if (mvp.getPlace().isSecured()) {
-			mvp
-				.getPlace()
-				.getLazyGatekeeper()
-				.get()
-				.canReveal(mvp);
+			if (mvp.getPlace().getGateKeeper().attempt()) {
+				processReveal(request, mvp, updateBrowser);
+			}
 		} else {
-			final PlaceRequest originalRequest = getCurrentPlaceRequest();
-
-			final BaseNestedPresenter<?> presenter = mvp.getPresenter();
-
-			presenter.prepareFromRequest(request);
-
-			if (originalRequest == getCurrentPlaceRequest()) {
-				updateHistory(request, updateBrowser);
-			}
-
-			if (!presenter.useManualReveal()) {
-				if (!presenter.isVisible()) {
-					presenter.forceReveal();
-				}
-			}
+			processReveal(request, mvp, updateBrowser);
 		}
 
+	}
+
+	private void processReveal(PlaceRequest request, PlaceMVP<?> mvp, boolean updateBrowser)  throws UnsupportedEncodingException  {
+		this.currentPlace = mvp;
+
+		final PlaceRequest originalRequest = getCurrentPlaceRequest();
+
+		final BaseNestedPresenter<?> presenter = mvp.getPresenter();
+
+		presenter.prepareFromRequest(request);
+
+		if (originalRequest == getCurrentPlaceRequest()) {
+			updateHistory(request, updateBrowser);
+		}
+
+		if (!presenter.useManualReveal()) {
+			if (!presenter.isVisible()) {
+				presenter.forceReveal();
+			}
+		}
 	}
 
 

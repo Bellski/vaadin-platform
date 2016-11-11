@@ -1,5 +1,7 @@
 package ru.vaadinp.annotations;
 
+import ru.vaadinp.security.Gatekeeper;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,4 +13,5 @@ import java.lang.annotation.*;
 public @interface GenerateMVP {
 	GenerateNameToken[] nameTokens() default {};
 	GenerateMVPInfo mvpInfo() default @GenerateMVPInfo(priority = -2);
+	Class<? extends Gatekeeper> gateKeeper() default Gatekeeper.class;
 }

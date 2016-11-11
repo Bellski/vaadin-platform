@@ -37,7 +37,7 @@ public class BaseErrorPlaceMVP extends NestedMVPImpl<BaseErrorPlacePresenter> {
 		@Binds
 		@IntoMap
 		@PlacesMap
-		@StringKey(BaseErrorPlaceToken.ENCODED_VAADINP_ERROR)
+		@StringKey(BaseErrorPlaceTokenSet.ENCODED_VAADINPERROR)
 		PlaceMVP<?> place(BaseErrorPlaceMVP mvp);
 	}
 
@@ -48,12 +48,6 @@ public class BaseErrorPlaceMVP extends NestedMVPImpl<BaseErrorPlacePresenter> {
 							 RootMVP rootMVP,
 							 RootMVP parent) {
 
-		super (
-			null,
-			lazyView,
-			lazyPresenter,
-			rootMVP,
-			parent, new Place(BaseErrorPlaceToken.VAADINP_ERROR_NAME_TOKEN)
-		);
+		super (lazyView, lazyPresenter, rootMVP, parent, new Place(BaseErrorPlaceTokenSet.VAADINPERROR_TOKEN));
 	}
 }

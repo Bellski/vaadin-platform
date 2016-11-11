@@ -10,23 +10,23 @@ import ru.vaadinp.vp.api.Presenter;
  * Created by oem on 10/12/16.
  */
 public class MVPImpl<P extends PresenterComponent<?>>  implements MVP<P> {
-	private Lazy<Object> lazyModel;
 	private final Lazy<? extends ViewImpl<?>> lazyView;
 	private final Lazy<P> lazyPresenter;
 	private final MVPInfo info;
 	private RootMVP rootMVP;
 
-	public MVPImpl(Lazy<? extends ViewImpl<?>> lazyView, Lazy<P> lazyPresenter, RootMVP rootMVP) {
-		this(null, lazyView, lazyPresenter, null, rootMVP);
+
+	public MVPImpl(Lazy<? extends ViewImpl<?>> lazyView,
+				   Lazy<P> lazyPresenter,
+				   RootMVP rootMVP) {
+		this(lazyView, lazyPresenter, rootMVP, null);
 	}
 
-	public MVPImpl(Lazy<Object> lazyModel,
-				   Lazy<? extends ViewImpl<?>> lazyView,
+	public MVPImpl(Lazy<? extends ViewImpl<?>> lazyView,
 				   Lazy<P> lazyPresenter,
-				   MVPInfo info,
-				   RootMVP rootMVP) {
+				   RootMVP rootMVP,
+				   MVPInfo info) {
 
-		this.lazyModel = lazyModel;
 		this.info = info;
 		this.lazyPresenter = lazyPresenter;
 		this.lazyView = lazyView;

@@ -30,6 +30,9 @@ public class PageUriFragmentSource extends BaseUriFragmentSource implements Page
 
 	@Override
 	public void uriFragmentChanged(Page.UriFragmentChangedEvent event) {
-		super.fireUriFragmentChange(event.getUriFragment());
+		setCurrentUriFragment(event.getUriFragment(), true);
 	}
+
+
+
 }
